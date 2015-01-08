@@ -1,0 +1,2 @@
+include ':app', ':LiferayRivet'
+project(':LiferayRivet').projectDir = new File('libraries/LiferayRivet')

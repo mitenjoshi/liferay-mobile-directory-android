@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="LoginView">
+
+        <attr name="buttonText" format="string" />
+        <attr name="buttonTextColor" format="integer" />
+        <attr name="buttonBackgroundColor" format="integer" />
+
+        <attr name="emailTextColor" format="integer" />
+        <attr name="emailTextHint" format="string" />
+        <attr name="emailTextHintColor" format ="integer"/>
+        <attr name="emailDrawable" format="integer" />
+
+        <attr name="passwordTextColor" format="integer" />
+        <attr name="passwordTextHint" format ="string"/>
+        <attr name="passwordTextHintColor" format ="integer"/>
+        <attr name="passwordDrawable" format="integer" />
+
+    </declare-styleable>
+
+</resources>
