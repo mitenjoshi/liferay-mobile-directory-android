@@ -1,4 +1,4 @@
-package com.rivetlogc.liferayrivet.ui.login;
+package com.rivetlogic.liferayrivet.ui.login;
 
 import android.content.Context;
 import android.content.res.TypedArray;
