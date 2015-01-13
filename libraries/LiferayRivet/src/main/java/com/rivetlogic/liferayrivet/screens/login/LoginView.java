@@ -1,4 +1,4 @@
-package com.rivetlogic.liferayrivet.ui.login;
+package com.rivetlogic.liferayrivet.screens.login;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -33,14 +33,6 @@ public class LoginView extends LinearLayout {
     private int buttonTextColor;
     private int buttonBackgroundColor;
 
-    public interface LoginRivetCallback {
-        public void onError();
-
-        public void onUpdate();
-
-        public void onSuccess();
-    }
-
     public LoginView(Context context) {
         super(context);
     }
@@ -52,24 +44,38 @@ public class LoginView extends LinearLayout {
         TypedArray a = context.getTheme().obtainStyledAttributes(attrs, R.styleable.LoginView, 0, 0);
         try {
 
-            emailTextHint = a.getString(R.styleable.LoginView_emailTextHint);
-            emailTextColor = a.getInt(R.styleable.LoginView_emailTextColor, 0);
-            emailTextHintColor = a.getInt(R.styleable.LoginView_emailTextHintColor, 0);
-            emailDrawable = a.getInt(R.styleable.LoginView_emailDrawable, 0);
+            emailTextHint = a.getString(R.styleable.LoginView_lrEmailTextHint);
+            emailTextColor = a.getInt(R.styleable.LoginView_lrEmailTextColor, 0);
+            emailTextHintColor = a.getInt(R.styleable.LoginView_lrEmailTextHintColor, 0);
+            emailDrawable = a.getInt(R.styleable.LoginView_lrEmailDrawable, 0);
 
-            passwordTextHint = a.getString(R.styleable.LoginView_passwordTextHint);
-            passwordTextColor = a.getInt(R.styleable.LoginView_passwordTextColor, 0);
-            passwordTextHintColor = a.getInt(R.styleable.LoginView_passwordTextHintColor, 0);
-            passwordDrawable = a.getInt(R.styleable.LoginView_passwordDrawable, 0);
+            passwordTextHint = a.getString(R.styleable.LoginView_lrPasswordTextHint);
+            passwordTextColor = a.getInt(R.styleable.LoginView_lrPasswordTextColor, 0);
+            passwordTextHintColor = a.getInt(R.styleable.LoginView_lrPasswordTextHintColor, 0);
+            passwordDrawable = a.getInt(R.styleable.LoginView_lrPasswordDrawable, 0);
 
-            buttonText = a.getString(R.styleable.LoginView_buttonText);
-            buttonTextColor = a.getInt(R.styleable.LoginView_buttonTextColor, 0);
-            buttonBackgroundColor = a.getInt(R.styleable.LoginView_buttonBackgroundColor, 0);
+            buttonText = a.getString(R.styleable.LoginView_lrButtonText);
+            buttonTextColor = a.getInt(R.styleable.LoginView_lrButtonTextColor, 0);
+            buttonBackgroundColor = a.getInt(R.styleable.LoginView_lrButtonBackgroundColor, 0);
 
         } finally {
             a.recycle();
         }
     }
+
+    public LoginView(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+    }
+
+    public interface LoginRivetCallback {
+        public void onError();
+
+        public void onUpdate();
+
+        public void onSuccess();
+    }
+
+
 
     private void init() {
         inflate(getContext(), R.layout.login, this);
@@ -91,7 +97,6 @@ public class LoginView extends LinearLayout {
             email.setHintTextColor(emailTextHintColor);
         if (emailDrawable > 0)
             email.setCompoundDrawablesWithIntrinsicBounds(emailDrawable, 0, 0, 0);
-
         if (passwordTextHint != null)
             password.setHint(passwordTextHint);
         if (passwordTextColor > 0)
@@ -100,8 +105,6 @@ public class LoginView extends LinearLayout {
             password.setHintTextColor(passwordTextHintColor);
         if (passwordDrawable > 0)
             password.setCompoundDrawablesWithIntrinsicBounds(passwordDrawable, 0, 0, 0);
-
-
         if (buttonText != null)
             button.setText(buttonText);
         if (buttonTextColor != 0)
