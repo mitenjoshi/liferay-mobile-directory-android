@@ -1,4 +1,4 @@
-package com.rivetlogic.liferayrivet.sdk.util;
+package com.rivetlogic.liferayrivet.util;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -18,7 +18,7 @@ public class SettingsUtil {
 	public static Session getSession() {
 		return new SessionImpl(getServer(), getLogin(), getPassword());
 	}
-	
+
 	public static String getLogin() {
 		return _preferences.getString(LOGIN, "alejandro.soto@rivetlogic.com");
 	}

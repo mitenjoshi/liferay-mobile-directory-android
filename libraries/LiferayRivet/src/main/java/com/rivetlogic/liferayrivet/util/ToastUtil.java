@@ -12,7 +12,7 @@
  * details.
  */
 
-package com.rivetlogic.liferayrivet.sdk.util;
+package com.rivetlogic.liferayrivet.util;
 
 import android.content.Context;
 
@@ -21,11 +21,11 @@ import android.widget.Toast;
 /**
  * @author Bruno Farache
  */
-public class ToastUtil {
+public class     ToastUtil {
 
-	public static void show(Context context, CharSequence message) {
-		ToastUtil.show(context, message, false);
-	}
+        public static void show(Context context, CharSequence message) {
+            ToastUtil.show(context, message, false);
+        }
 
 	public static void show(
 		Context context, CharSequence message, boolean longDuration) {
