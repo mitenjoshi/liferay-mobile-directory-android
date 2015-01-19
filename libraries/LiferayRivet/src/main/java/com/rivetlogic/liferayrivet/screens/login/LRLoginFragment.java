@@ -1,4 +1,4 @@
-package com.rivetlogic.liferayrivet.screens.login.ui;
+package com.rivetlogic.liferayrivet.screens.login;
 
 import android.app.Activity;
 import android.app.Fragment;
@@ -16,7 +16,8 @@ import com.rivetlogic.liferayrivet.R;
 import com.rivetlogic.liferayrivet.transport.PeopleDirectoryTask;
 import com.rivetlogic.liferayrivet.ui.component.ShapeRoundRectStroke;
 import com.rivetlogic.liferayrivet.ui.component.StateListRect;
-import com.rivetlogic.liferayrivet.screens.directorylist.model.PeopleDirectory;
+import com.rivetlogic.liferayrivet.screens.peopledirectorylist.model.PeopleDirectory;
+import com.rivetlogic.liferayrivet.util.SettingsUtil;
 
 /**
  * Created by lorenz on 1/13/15.
@@ -74,9 +75,7 @@ public class LRLoginFragment extends Fragment {
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-
         this.listener = (LRLoginFragmentCallback) activity;
-
     }
 
     @Override
@@ -115,6 +114,9 @@ public class LRLoginFragment extends Fragment {
         submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                SettingsUtil.setLogin(email.getText().toString());
+                SettingsUtil.setPassword(password.getText().toString());
+
                 PeopleDirectoryTask searchTask = new PeopleDirectoryTask(callback, "", -1, -1);
                 searchTask.execute();
             }
@@ -133,6 +135,9 @@ public class LRLoginFragment extends Fragment {
         password.setTextColor(passwordTextColor);
         password.setHintTextColor(passwordTextHintColor);
         password.setCompoundDrawablesWithIntrinsicBounds(getResources().getDrawable(passwordDrawable), null, null, null);
+
+        email.setText(SettingsUtil.getLogin());
+        password.setText(SettingsUtil.getPassword());
 
         return v;
     }

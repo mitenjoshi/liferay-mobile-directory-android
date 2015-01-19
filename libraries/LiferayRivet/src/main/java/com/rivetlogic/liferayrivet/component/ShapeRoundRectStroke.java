@@ -1,4 +1,4 @@
-package com.rivetlogic.liferayrivet.ui.component;
+package com.rivetlogic.liferayrivet.component;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
