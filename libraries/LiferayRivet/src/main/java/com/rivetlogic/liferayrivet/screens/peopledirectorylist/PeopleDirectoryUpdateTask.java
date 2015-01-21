@@ -1,11 +1,9 @@
-package com.rivetlogic.liferayrivet.screens.peopledirectorylist.transport;
+package com.rivetlogic.liferayrivet.screens.peopledirectorylist;
 
 import android.os.AsyncTask;
 
 import com.liferay.mobile.android.service.Session;
-import com.rivetlogic.liferayrivet.screens.peopledirectorylist.sdk.PeopleDirectoryService;
 import com.rivetlogic.liferayrivet.util.SettingsUtil;
-import com.rivetlogic.liferayrivet.screens.peopledirectorylist.model.PeopleDirectory;
 
 import org.json.JSONObject;
 
@@ -13,7 +11,7 @@ import org.json.JSONObject;
  * Created by lorenz on 1/13/15.
  */
 
-public class PeopleDirectoryTask extends AsyncTask<Void, String, PeopleDirectory> {
+public class PeopleDirectoryUpdateTask extends AsyncTask<Void, String, PeopleDirectory> {
     private PeopleDirectoryTaskCallback listener;
     private String keywords;
     private int start;
@@ -26,7 +24,7 @@ public class PeopleDirectoryTask extends AsyncTask<Void, String, PeopleDirectory
         public void onCancel(String error);
     }
 
-    public PeopleDirectoryTask(PeopleDirectoryTaskCallback listener, String keywords, int start, int end) {
+    public PeopleDirectoryUpdateTask(PeopleDirectoryTaskCallback listener, String keywords, int start, int end) {
         this.listener = listener;
         this.keywords = keywords;
         this.start = start;
@@ -61,7 +59,7 @@ public class PeopleDirectoryTask extends AsyncTask<Void, String, PeopleDirectory
 
     @Override
     public void onCancelled(PeopleDirectory dir) {
-        listener.onCancel(e.toString());
+        listener.onCancel(e.getMessage());
     }
 
     @Override

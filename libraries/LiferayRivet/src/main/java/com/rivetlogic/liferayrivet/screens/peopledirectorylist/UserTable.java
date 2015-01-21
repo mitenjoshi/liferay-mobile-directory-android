@@ -1,6 +1,9 @@
-package com.rivetlogic.mobilepeopledirectory.data;
+package com.rivetlogic.liferayrivet.screens.peopledirectorylist;
 
 import android.database.SQLException;
+
+import com.rivetlogic.liferayrivet.database.Database;
+import com.rivetlogic.liferayrivet.database.TableRow;
 
 /**
  * Copyright (c) 2014 HMR Weight Management Services Corp.. All rights reserved.  10/13/14.

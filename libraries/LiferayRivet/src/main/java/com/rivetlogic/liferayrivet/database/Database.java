@@ -1,11 +1,5 @@
 package com.rivetlogic.liferayrivet.database;
 
-import java.util.Vector;
-
-import com.hmrprogram.diettracker.data.TableRow.DbType;
-import com.hmrprogram.diettracker.data.TableRow.Nullable;
-import com.hmrprogram.diettracker.main.MainApp;
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -13,8 +7,13 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.rivetlogic.mobilepeopledirectory.main.MainApp;
+
+
+import java.util.Vector;
+
 public class Database {
-	private static final String DATABASE_NAME = "com.hmrprogram.diettracker.database.db";
+	private static final String DATABASE_NAME = "com.rivetlogic.mobilepeoplefinder.database.db";
 	private static final int DATABASE_VERSION = 1;
 	
 	private static DatabaseHelper mDbHelper = null;
@@ -27,9 +26,9 @@ public class Database {
 	private static final String KEY_TABLE_VERSION = "table_version";
 
 	private static TableRow[] versionTableDef = {
-			new TableRow(1, KEY_ID, DbType.INTEGER_PRIMARY_KEY, Nullable.FALSE),
-			new TableRow(1, KEY_TABLE_NAME, DbType.TEXT, Nullable.FALSE),
-			new TableRow(1, KEY_TABLE_VERSION, DbType.INT, Nullable.FALSE)
+			new TableRow(1, KEY_ID, TableRow.DbType.INTEGER_PRIMARY_KEY, TableRow.Nullable.FALSE),
+			new TableRow(1, KEY_TABLE_NAME, TableRow.DbType.TEXT, TableRow.Nullable.FALSE),
+			new TableRow(1, KEY_TABLE_VERSION, TableRow.DbType.INT, TableRow.Nullable.FALSE)
 	};
    
 	private static class DatabaseHelper extends SQLiteOpenHelper {

@@ -1,4 +1,6 @@
-package com.rivetlogic.liferayrivet.screens.peopledirectorylist.data;
+package com.rivetlogic.liferayrivet.screens.peopledirectorylist;
+
+import com.rivetlogic.liferayrivet.screens.peopledirectorylist.User;
 
 import org.json.JSONArray;
 import org.json.JSONException;

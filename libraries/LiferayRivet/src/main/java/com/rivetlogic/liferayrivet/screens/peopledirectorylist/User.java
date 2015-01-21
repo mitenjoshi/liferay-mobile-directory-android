@@ -1,4 +1,4 @@
-package com.rivetlogic.liferayrivet.screens.peopledirectorylist.data;
+package com.rivetlogic.liferayrivet.screens.peopledirectorylist;
 
 import org.json.JSONException;
 import org.json.JSONObject;
