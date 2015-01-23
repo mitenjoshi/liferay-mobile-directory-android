@@ -5,4 +5,51 @@
     <color name="lr_black">#ff000000</color>
     <color name="lr_transparent">#00000000</color>
 
+    <color name="rivet_orange">#fff58220</color>
+
+    <color name="skype_blue">#ff00b8ed</color>
+    <color name="skype_blue_pressed">#ff47c8ed</color>
+
+    <color name="phone_green">#ff27ae61</color>
+    <color name="phone_green_pressed">#ff54bf81</color>
+
+    <color name="lr_black_95">#ff0d0d0d</color>
+    <color name="lr_black_90">#ff191919</color>
+    <color name="lr_black_85">#ff262626</color>
+    <color name="lr_black_80">#ff333333</color>
+    <color name="lr_black_75">#ff404040</color>
+    <color name="lr_black_70">#ff4c4c4c</color>
+    <color name="lr_black_65">#ff595959</color>
+    <color name="lr_black_60">#ff666666</color>
+    <color name="lr_black_55">#ff737373</color>
+    <color name="lr_black_50">#ff808080</color>
+    <color name="lr_black_45">#ff8c8c8c</color>
+    <color name="lr_black_40">#ff999999</color>
+    <color name="lr_black_35">#ffa5a5a5</color>
+    <color name="lr_black_30">#ffb2b2b2</color>
+    <color name="lr_black_25">#ffbfbfbf</color>
+    <color name="lr_black_20">#ffcccccc</color>
+    <color name="lr_black_15">#ffd9d9d9</color>
+    <color name="lr_black_10">#ffe5e5e5</color>
+    <color name="lr_black_05">#fff7f7f7</color>
+
+    <color name="turquoise">#ff1bbc9d</color>
+    <color name="green_sea">#ff16a086</color>
+    <color name="sun_flower">#fff1c40f</color>
+    <color name="orange">#fff49c14</color>
+
+    <color name="emerald">#ff2fcc71</color>
+    <color name="nephritis">#ff27ae61</color>
+    <color name="carrot">#ffe77e23</color>
+    <color name="pumpkin">#ffd55401</color>
+
+    <color name="peter_river">#ff3598dc</color>
+    <color name="belize_hole">#ff2a80b9</color>
+    <color name="alizarin">#ffe84c3d</color>
+    <color name="pomegranate">#ffc1392b</color>
+
+    <color name="amethyst">#ff9c59b8</color>
+    <color name="wisteria">#ff8f44ad</color>
+    <color name="wet_asphalt">#ff34495e</color>
+
 </resources>

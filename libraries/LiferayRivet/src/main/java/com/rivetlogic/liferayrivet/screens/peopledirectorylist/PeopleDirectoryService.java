@@ -15,6 +15,21 @@ public class PeopleDirectoryService extends BaseService {
         super(session);
     }
 
+    public JSONObject fetchAll() throws Exception {
+        JSONObject _command = new JSONObject();
+
+        try {
+            JSONObject _params = new JSONObject();
+
+            _command.put("/people-directory-services-portlet/peopledirectory/fetch-all", _params);
+        }
+        catch (JSONException _je) {
+            throw new Exception(_je);
+        }
+
+        return (JSONObject)session.invoke(_command);
+    }
+
     public JSONObject search(String keywords, int start, int end) throws Exception {
         JSONObject _command = new JSONObject();
 
@@ -33,4 +48,22 @@ public class PeopleDirectoryService extends BaseService {
 
         return (JSONObject)session.invoke(_command);
     }
+
+    public JSONObject usersFetchByDate(long modifiedDate) throws Exception {
+        JSONObject _command = new JSONObject();
+
+        try {
+            JSONObject _params = new JSONObject();
+
+            _params.put("modifiedDate", modifiedDate);
+
+            _command.put("/people-directory-services-portlet/peopledirectory/users-fetch-by-date", _params);
+        }
+        catch (JSONException _je) {
+            throw new Exception(_je);
+        }
+
+        return (JSONObject)session.invoke(_command);
+    }
+
 }

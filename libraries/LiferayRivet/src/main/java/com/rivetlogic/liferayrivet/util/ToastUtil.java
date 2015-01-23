@@ -21,36 +21,36 @@ import android.widget.Toast;
 /**
  * @author Bruno Farache
  */
-public class     ToastUtil {
+public class ToastUtil {
 
-        public static void show(Context context, CharSequence message) {
-            ToastUtil.show(context, message, false);
+    public static void show(Context context, CharSequence message) {
+        ToastUtil.show(context, message, false);
+    }
+
+    public static void show(
+            Context context, CharSequence message, boolean longDuration) {
+
+        int duration = Toast.LENGTH_SHORT;
+
+        if (longDuration) {
+            duration = Toast.LENGTH_LONG;
         }
 
-	public static void show(
-		Context context, CharSequence message, boolean longDuration) {
+        Toast toast = Toast.makeText(context, message, duration);
 
-		int duration = Toast.LENGTH_SHORT;
+        toast.show();
+    }
 
-		if (longDuration) {
-			duration = Toast.LENGTH_LONG;
-		}
+    public static void show(Context context, int messageId) {
+        ToastUtil.show(context, messageId, false);
+    }
 
-		Toast toast = Toast.makeText(context, message, duration);
+    public static void show(
+            Context context, int messageId, boolean longDuration) {
 
-		toast.show();
-	}
+        CharSequence text = context.getResources().getText(messageId);
 
-	public static void show(Context context, int messageId) {
-		ToastUtil.show(context, messageId, false);
-	}
-
-	public static void show(
-		Context context, int messageId, boolean longDuration) {
-
-		CharSequence text = context.getResources().getText(messageId);
-
-		ToastUtil.show(context, text, longDuration);
-	}
+        ToastUtil.show(context, text, longDuration);
+    }
 
 }

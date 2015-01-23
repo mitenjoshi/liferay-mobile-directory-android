@@ -5,4 +5,11 @@
         <!-- Customize your theme here. -->
     </style>
 
+
+    <style name="HorizontalDivider">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">.75dp</item>
+        <item name="android:background">@color/lr_black_20</item>
+    </style>
+
 </resources>

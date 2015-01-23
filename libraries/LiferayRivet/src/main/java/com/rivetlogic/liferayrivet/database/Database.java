@@ -7,9 +7,6 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.rivetlogic.mobilepeopledirectory.main.MainApp;
-
-
 import java.util.Vector;
 
 public class Database {
@@ -48,9 +45,9 @@ public class Database {
 		}
 	}
 			
-	protected synchronized Database open(String tableName, int tableVersion, TableRow[] tableDef) throws SQLException {
+	protected synchronized Database open(Context context, String tableName, int tableVersion, TableRow[] tableDef) throws SQLException {
 		if (mDbHelper == null) {
-			mDbHelper = new DatabaseHelper(MainApp.getAppContext());
+			mDbHelper = new DatabaseHelper(context);
 			mDatabase = mDbHelper.getWritableDatabase();
 		}
 		this.tableName = tableName;

@@ -1,24 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="lrThemeLoginViewDefault" >
 
-        <item name="lrTheme">@layout/lr_fragment_login_default</item>
-
-        <item name="lrButtonText">@string/sign_in</item>
-        <item name="lrButtonTextColor">@color/belize_hole</item>
-        <item name="lrButtonBackgroundColor">@color/green_sea</item>
-
-        <item name="lrEmailTextColor">@color/lr_black_70</item>
-        <item name="lrEmailTextHint">@string/email</item>
-        <item name="lrEmailTextHintColor">@color/lr_black_20</item>
-        <item name="lrEmailDrawable">@drawable/lr_ic_action_email</item>
-
-        <item name="lrPasswordTextColor">@color/lr_black_70</item>
-        <item name="lrPasswordTextHint">@string/password</item>
-        <item name="lrPasswordTextHintColor">@color/lr_black_20</item>
-        <item name="lrPasswordDrawable">@drawable/lr_ic_action_secure</item>
-
+    <style name="CustomLoginTheme" >
+        <item name="lrScreenLoginLayoutBackground">@drawable/background_gradient</item>
+        <item name="lrScreenLoginButtonTextColor">@color/white</item>
+        <item name="lrScreenLoginButtonBackgroundColor">@color/pomegranate</item>
     </style>
+
 
 </resources>

@@ -11,20 +11,24 @@ import java.io.Serializable;
 public class User implements Serializable {
 
     /*
-    "portraitUrl": "\/image\/user_male_portrait?img_id=0&img_id_token=2jmj7l5rSw0yVb%2FvlWAYkK%2FYBwk%3D&t=1421271597118",
-    "userId": 10624,
-    "screenName": "dlc1",
-    "emailAddress": "test.dlc.1@liferay.com",
-    "userPhone": "",
-    "birthDate": 0,
-    "fullName": "Test DLC 1",
-    "skypeName": "",
-    "jobTitle": "",
-    "city": ""
+      "birthDate": 1420733424000,
+      "city": "",
+      "deleted": false,
+      "emailAddress": "default@liferay.com",
+      "fullName": "",
+      "jobTitle": "",
+      "male": true,
+      "modifiedDate": 1420733424000,
+      "portraitUrl": "/image/user_male_portrait?img_id=0&img_id_token=2jmj7l5rSw0yVb%2FvlWAYkK%2FYBwk%3D&t=1421859060998",
+      "screenName": "10158",
+      "skypeName": "",
+      "userId": 10158,
+      "userPhone": ""
     */
 
-    public static final String PORTRAIT_URL = "portraitUrl";
     public static final String USER_ID = "userId";
+    public static final String MODIFIED_DATE = "modifiedDate";
+    public static final String PORTRAIT_URL = "portraitUrl";
     public static final String SCREEN_NAME = "screenName";
     public static final String EMAIL_ADDRESS = "emailAddress";
     public static final String USER_PHONE = "userPhone";
@@ -34,24 +38,30 @@ public class User implements Serializable {
     public static final String JOB_TITLE = "jobTitle";
     public static final String CITY = "city";
 
-    public String portraitUrl;
     public int userId;
+    public long modifiedDate;
+    public String portraitUrl;
     public String screenName;
     public String emailAddress;
     public String userPhone;
-    public int birthDate;
+    public long birthDate;
     public String fullName;
     public String skypeName;
     public String jobTitle;
     public String city;
 
+    public User() {
+
+    }
+
     public User(JSONObject json) throws JSONException {
-        portraitUrl = json.getString(PORTRAIT_URL);
         userId = json.getInt(USER_ID);
+        modifiedDate = json.getLong(MODIFIED_DATE);
+        portraitUrl = json.getString(PORTRAIT_URL);
         screenName = json.getString(SCREEN_NAME);
         emailAddress = json.getString(EMAIL_ADDRESS);
         userPhone = json.getString(USER_PHONE);
-        birthDate = json.getInt(BIRTH_DATE);
+        birthDate = json.getLong(BIRTH_DATE);
         fullName = json.getString(FULL_NAME);
         skypeName = json.getString(SKYPE_NAME);
         jobTitle = json.getString(JOB_TITLE);

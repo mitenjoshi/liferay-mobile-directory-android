@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <dimen name="corner_radius">5dp</dimen>
+    <dimen name="corner_radius">4dp</dimen>
     <dimen name="stroke_width">1dp</dimen>
-
-
+    <dimen name="listview_image_size">68dp</dimen>
+    <dimen name="detail_image_size">132dp</dimen>
+    <dimen name="background_image_size">186dp</dimen>
 </resources>

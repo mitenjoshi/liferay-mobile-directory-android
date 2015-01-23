@@ -1,23 +1,25 @@
 package com.rivetlogic.liferayrivet.screens.login;
 
 import android.app.Activity;
-import android.app.Fragment;
+
 import android.app.ProgressDialog;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.rivetlogic.liferayrivet.R;
-import com.rivetlogic.liferayrivet.transport.PeopleDirectoryTask;
-import com.rivetlogic.liferayrivet.ui.component.ShapeRoundRectStroke;
-import com.rivetlogic.liferayrivet.ui.component.StateListRect;
-import com.rivetlogic.liferayrivet.screens.peopledirectorylist.model.PeopleDirectory;
+import com.rivetlogic.liferayrivet.component.ShapeRoundRectStroke;
+import com.rivetlogic.liferayrivet.component.StateListRect;
+import com.rivetlogic.liferayrivet.screens.peopledirectorylist.PeopleDirectory;
 import com.rivetlogic.liferayrivet.util.SettingsUtil;
+import com.rivetlogic.liferayrivet.util.ToastUtil;
 
 /**
  * Created by lorenz on 1/13/15.
@@ -30,6 +32,8 @@ public class LRLoginFragment extends Fragment {
 
     private int styleResId;
     private int layoutId;
+
+    private int backgroundRes;
 
     private EditText email;
     private EditText password;
@@ -52,7 +56,7 @@ public class LRLoginFragment extends Fragment {
     private ProgressDialog pd;
 
     public interface LRLoginFragmentCallback {
-        public void onLoginSucess(PeopleDirectory directory);
+        public void onLoginSuccess();
     }
 
     public static LRLoginFragment newInstance() {
@@ -68,11 +72,6 @@ public class LRLoginFragment extends Fragment {
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-    }
-
-    @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         this.listener = (LRLoginFragmentCallback) activity;
@@ -82,24 +81,18 @@ public class LRLoginFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        styleResId = R.style.lrThemeLoginViewDefault;
+        setStyledAttributes();
         Bundle args = getArguments();
         if (args != null && args.containsKey(KEY_STYLE_ID)) {
             styleResId = args.getInt(KEY_STYLE_ID);
+            if (styleResId > 0)
+                setStyledAttributes();
         }
-
-        @SuppressWarnings("ResourceType")
-        TypedArray a = getActivity().getApplicationContext().obtainStyledAttributes(R.style.lrThemeLoginViewDefault, R.styleable.LRLoginView);
-        setStyledAttributes(a);
-        if (styleResId > 0) {
-            a = getActivity().getApplicationContext().obtainStyledAttributes(styleResId, R.styleable.LRLoginView);
-            setStyledAttributes(a);
-        }
-        a.recycle();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
         View v = inflater.inflate(layoutId, null);
 
         submitButton = (TextView) v.findViewById(R.id.lr_login_submit);
@@ -117,10 +110,13 @@ public class LRLoginFragment extends Fragment {
                 SettingsUtil.setLogin(email.getText().toString());
                 SettingsUtil.setPassword(password.getText().toString());
 
-                PeopleDirectoryTask searchTask = new PeopleDirectoryTask(callback, "", -1, -1);
+                PeopleDirectorySearchTask searchTask = new PeopleDirectorySearchTask(callback, "", 0, 0);
                 searchTask.execute();
             }
         });
+
+        RelativeLayout background = (RelativeLayout) v.findViewById(R.id.lr_login_background);
+        background.setBackgroundResource(backgroundRes);
 
         Drawable textDrawable = new ShapeRoundRectStroke(buttonBackgroundColor, 0f, radius, radius, radius, radius, 255, strokeWidth);
         email.setBackground(textDrawable);
@@ -142,45 +138,49 @@ public class LRLoginFragment extends Fragment {
         return v;
     }
 
-    private void setStyledAttributes(TypedArray a) {
-        try {
-            layoutId = a.getResourceId(R.styleable.LRLoginView_lrTheme, layoutId);
+    private void setStyledAttributes() {
+        TypedArray a = getActivity().getApplicationContext().obtainStyledAttributes(styleResId, R.styleable.LRLoginView);
+        if(a != null) {
+            try {
+                layoutId = a.getResourceId(R.styleable.LRLoginView_lrTheme, layoutId);
+                backgroundRes = a.getResourceId(R.styleable.LRLoginView_lrScreenLoginLayoutBackground, backgroundRes);
 
-            buttonTextColor = a.getColor(R.styleable.LRLoginView_lrButtonTextColor, buttonTextColor);
-            String src = a.getString(R.styleable.LRLoginView_lrButtonText);
-            if(src != null)
-                buttonText = src;
-            buttonBackgroundColor = a.getColor(R.styleable.LRLoginView_lrButtonBackgroundColor, buttonBackgroundColor);
+                buttonTextColor = a.getColor(R.styleable.LRLoginView_lrScreenLoginButtonTextColor, buttonTextColor);
+                String src = a.getString(R.styleable.LRLoginView_lrScreenLoginButtonText);
+                if (src != null)
+                    buttonText = src;
+                buttonBackgroundColor = a.getColor(R.styleable.LRLoginView_lrScreenLoginButtonBackgroundColor, buttonBackgroundColor);
 
-            emailTextColor = a.getColor(R.styleable.LRLoginView_lrEmailTextColor, emailTextColor);
-            src = a.getString(R.styleable.LRLoginView_lrEmailTextHint);
-            if(src != null)
-                emailTextHint = src;
-            emailTextHintColor = a.getColor(R.styleable.LRLoginView_lrEmailTextHintColor, emailTextHintColor);
-            emailDrawable = a.getResourceId(R.styleable.LRLoginView_lrEmailDrawable, emailDrawable);
+                emailTextColor = a.getColor(R.styleable.LRLoginView_lrScreenLoginEmailTextColor, emailTextColor);
+                src = a.getString(R.styleable.LRLoginView_lrScreenLoginEmailTextHint);
+                if (src != null)
+                    emailTextHint = src;
+                emailTextHintColor = a.getColor(R.styleable.LRLoginView_lrScreenLoginEmailTextHintColor, emailTextHintColor);
+                emailDrawable = a.getResourceId(R.styleable.LRLoginView_lrScreenLoginEmailDrawable, emailDrawable);
 
-            passwordTextColor = a.getColor(R.styleable.LRLoginView_lrPasswordTextColor, passwordTextColor);
-            src = a.getString(R.styleable.LRLoginView_lrPasswordTextHint);
-            if(src != null)
-                passwordTextHint = src;
-            passwordTextHintColor = a.getColor(R.styleable.LRLoginView_lrPasswordTextHintColor, passwordTextHintColor);
-            passwordDrawable = a.getResourceId(R.styleable.LRLoginView_lrPasswordDrawable, passwordDrawable);
+                passwordTextColor = a.getColor(R.styleable.LRLoginView_lrScreenLoginPasswordTextColor, passwordTextColor);
+                src = a.getString(R.styleable.LRLoginView_lrScreenLoginPasswordTextHint);
+                if (src != null)
+                    passwordTextHint = src;
+                passwordTextHintColor = a.getColor(R.styleable.LRLoginView_lrScreenLoginPasswordTextHintColor, passwordTextHintColor);
+                passwordDrawable = a.getResourceId(R.styleable.LRLoginView_lrScreenLoginPasswordDrawable, passwordDrawable);
 
-        } finally {
-
+            } finally {
+                a.recycle();
+            }
         }
     }
 
-    private PeopleDirectoryTask.PeopleDirectoryTaskCallback callback = new PeopleDirectoryTask.PeopleDirectoryTaskCallback() {
+    private PeopleDirectorySearchTask.PeopleDirectorySearchTaskCallback callback = new PeopleDirectorySearchTask.PeopleDirectorySearchTaskCallback() {
         @Override
         public void onPreExecute() {
             pd = ProgressDialog.show(getActivity(), null, null);
-            pd.setMessage("Searching...");
+            pd.setMessage(getString(R.string.msg_signing_in));
         }
 
         @Override
         public void onSuccess(PeopleDirectory dir) {
-            listener.onLoginSucess(dir);
+            listener.onLoginSuccess();
             if (pd != null && pd.isShowing()) {
                 pd.dismiss();
             }
@@ -191,6 +191,7 @@ public class LRLoginFragment extends Fragment {
             if (pd != null && pd.isShowing()) {
                 pd.dismiss();
             }
+            ToastUtil.show(getActivity(), error, true);
         }
     };
 

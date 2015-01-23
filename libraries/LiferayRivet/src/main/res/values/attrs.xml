@@ -1,22 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <declare-styleable name="LoginView">
+    <declare-styleable name="LRTheme">
 
-        <attr name="buttonText" format="string" />
-        <attr name="buttonTextColor" format="integer" />
-        <attr name="buttonBackgroundColor" format="integer" />
+    </declare-styleable>
+    <declare-styleable name="LRLoginView">
 
-        <attr name="emailTextColor" format="integer" />
-        <attr name="emailTextHint" format="string" />
-        <attr name="emailTextHintColor" format ="integer"/>
-        <attr name="emailDrawable" format="integer" />
+        <attr name="lrTheme" format="reference" />
+        <attr name="lrScreenLoginLayoutBackground" format="reference" />
 
-        <attr name="passwordTextColor" format="integer" />
-        <attr name="passwordTextHint" format ="string"/>
-        <attr name="passwordTextHintColor" format ="integer"/>
-        <attr name="passwordDrawable" format="integer" />
+        <attr name="lrScreenLoginButtonText" format="string" />
+        <attr name="lrScreenLoginButtonTextColor" format="color" />
+        <attr name="lrScreenLoginButtonBackgroundColor" format="color" />
 
+        <attr name="lrScreenLoginEmailTextColor" format="color" />
+        <attr name="lrScreenLoginEmailTextHint" format="string" />
+        <attr name="lrScreenLoginEmailTextHintColor" format="color" />
+        <attr name="lrScreenLoginEmailDrawable" format="reference" />
+
+        <attr name="lrScreenLoginPasswordTextColor" format="integer" />
+        <attr name="lrScreenLoginPasswordTextHint" format="string" />
+        <attr name="lrScreenLoginPasswordTextHintColor" format="integer" />
+        <attr name="lrScreenLoginPasswordDrawable" format="reference" />
+
+    </declare-styleable>
+
+    <declare-styleable name="CircularImageView">
+        <attr name="border_width" format="dimension" />
+        <attr name="border_color" format="color" />
     </declare-styleable>
 
 </resources>

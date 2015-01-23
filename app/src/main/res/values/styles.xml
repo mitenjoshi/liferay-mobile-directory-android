@@ -1,8 +1,26 @@
 <resources>
 
-    <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
+    <style name="MPDSplashTheme" parent="android:style/Theme.Light">
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowBackground">@drawable/splash_screen</item>
+    </style>
+
+    <style name="MPDTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="searchViewStyle">@style/SearchViewStyle</item>
+        <!-- colorPrimary is used for the default action bar background -->
+        <item name="colorPrimary">@color/rivet_orange</item>
+        <!-- colorPrimaryDark is used for the status bar -->
+        <item name="colorPrimaryDark">@color/emerald</item>
+
+        <item name="colorAccent">@color/lr_black_20</item>
+        <item name="colorControlNormal">@color/emerald</item>
+        <item name="colorControlHighlight">@color/emerald</item>
+        <item name="colorSwitchThumbNormal">@color/emerald</item>
+    </style>
+
+    <style name="SearchViewStyle" parent="Widget.AppCompat.SearchView">
+        <item name="closeIcon">@drawable/abc_ic_clear_mtrl_alpha</item>
     </style>
 
 </resources>

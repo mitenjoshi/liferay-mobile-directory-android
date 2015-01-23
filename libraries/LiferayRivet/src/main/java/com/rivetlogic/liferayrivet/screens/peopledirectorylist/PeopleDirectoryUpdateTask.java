@@ -1,5 +1,6 @@
 package com.rivetlogic.liferayrivet.screens.peopledirectorylist;
 
+import android.content.Context;
 import android.os.AsyncTask;
 
 import com.liferay.mobile.android.service.Session;
@@ -11,24 +12,23 @@ import org.json.JSONObject;
  * Created by lorenz on 1/13/15.
  */
 
-public class PeopleDirectoryUpdateTask extends AsyncTask<Void, String, PeopleDirectory> {
-    private PeopleDirectoryTaskCallback listener;
-    private String keywords;
-    private int start;
-    private int end;
+public class PeopleDirectoryUpdateTask extends AsyncTask<Void, String, Integer> {
+    private Context context;
+    private PeopleDirectoryUpdateTaskCallback listener;
+    private long modifiedDate;
+
     private Exception e;
 
-    public interface PeopleDirectoryTaskCallback {
+    public interface PeopleDirectoryUpdateTaskCallback {
         public void onPreExecute();
-        public void onSuccess(PeopleDirectory dir);
+        public void onSuccess(int count);
         public void onCancel(String error);
     }
 
-    public PeopleDirectoryUpdateTask(PeopleDirectoryTaskCallback listener, String keywords, int start, int end) {
+    public PeopleDirectoryUpdateTask(Context context, PeopleDirectoryUpdateTaskCallback listener, long modifiedDate) {
+        this.context = context;
         this.listener = listener;
-        this.keywords = keywords;
-        this.start = start;
-        this.end = end;
+        this.modifiedDate = modifiedDate;
     }
 
     @Override
@@ -43,28 +43,33 @@ public class PeopleDirectoryUpdateTask extends AsyncTask<Void, String, PeopleDir
     }
 
     @Override
-    protected PeopleDirectory doInBackground(Void... params) {
+    protected Integer doInBackground(Void... params) {
         Session session = SettingsUtil.getSession();
         PeopleDirectoryService ser = new PeopleDirectoryService(session);
         try {
-            JSONObject json = ser.search(keywords, start, end);
+            JSONObject json = ser.usersFetchByDate(modifiedDate);
             PeopleDirectory dir = new PeopleDirectory(json);
-            return dir;
+
+            if(dir != null && dir.users != null && dir.users.size() > 0) {
+                DataAccessPeopleDirectory.getInstance(context).updateUsers(dir.users);
+                return dir.users.size();
+            }
+
         } catch (Exception e) {
             this.e = e;
             cancel(true);
         }
-        return null;
+        return 0;
     }
 
     @Override
-    public void onCancelled(PeopleDirectory dir) {
+    public void onCancelled(Integer count) {
         listener.onCancel(e.getMessage());
     }
 
     @Override
-    public void onPostExecute(PeopleDirectory dir) {
-        listener.onSuccess(dir);
+    public void onPostExecute(Integer count) {
+        listener.onSuccess(count);
     }
 
 }

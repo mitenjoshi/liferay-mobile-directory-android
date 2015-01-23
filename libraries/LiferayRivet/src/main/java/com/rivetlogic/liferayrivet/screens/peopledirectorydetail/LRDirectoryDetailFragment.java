@@ -1,25 +1,41 @@
 package com.rivetlogic.liferayrivet.screens.peopledirectorydetail;
 
-import android.app.Fragment;
+import android.annotation.TargetApi;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.TypedArray;
+import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.renderscript.Allocation;
+import android.renderscript.Element;
+import android.renderscript.RenderScript;
+import android.renderscript.ScriptIntrinsicBlur;
+import android.support.v4.app.Fragment;
 import android.telephony.TelephonyManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.rivetlogic.liferayrivet.R;
-import com.rivetlogic.liferayrivet.screens.peopledirectorylist.model.User;
-import com.rivetlogic.liferayrivet.ui.component.RoundedTransformation;
+import com.rivetlogic.liferayrivet.component.CircularImageView;
+import com.rivetlogic.liferayrivet.screens.peopledirectorylist.User;
+import com.rivetlogic.liferayrivet.component.RoundedTransformation;
 import com.rivetlogic.liferayrivet.util.SettingsUtil;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 /**
  * Created by lorenz on 1/16/15.
@@ -31,6 +47,8 @@ public class LRDirectoryDetailFragment extends Fragment {
 
     private int styleResId;
     private User user;
+    private CircularImageView imageView;
+    private ImageView frame;
 
     public static LRDirectoryDetailFragment newInstance(int styleResId, User user) {
         LRDirectoryDetailFragment fragment = new LRDirectoryDetailFragment();
@@ -74,14 +92,14 @@ public class LRDirectoryDetailFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.lr_fragment_directory_detail, null);
 
-        ImageView image = (ImageView)v.findViewById(R.id.lr_fragment_directory_detail_image);
+        imageView = (CircularImageView)v.findViewById(R.id.lr_fragment_directory_detail_image);
+        frame = (ImageView) v.findViewById(R.id.lr_fragment_directory_detail_image_background);
+
         Picasso.with(getActivity()).load(SettingsUtil.getServer() + user.portraitUrl)
                 .placeholder(R.drawable.ic_list_image_default)
                 .error(R.drawable.ic_list_image_default)
-                .transform(new RoundedTransformation((int) (getResources().getDimension(R.dimen.corner_radius))*2, 2))
-                .centerCrop()
                 .resizeDimen(R.dimen.detail_image_size, R.dimen.detail_image_size)
-                .into(image);
+                .into(target);
 
         TextView name = (TextView) v.findViewById(R.id.lr_fragment_directory_detail_name);
         name.setText(user.fullName);
@@ -89,14 +107,14 @@ public class LRDirectoryDetailFragment extends Fragment {
         TextView email = (TextView) v.findViewById(R.id.lr_fragment_directory_detail_email);
         email.setText(user.emailAddress);
 
-        TextView title = (TextView) v.findViewById(R.id.lr_fragment_directory_detail_title);
-        title.setText(user.jobTitle);
+     //   TextView title = (TextView) v.findViewById(R.id.lr_fragment_directory_detail_title);
+      //  title.setText(user.jobTitle);
 
         TextView screenName = (TextView) v.findViewById(R.id.lr_fragment_directory_detail_screen_name);
         screenName.setText(user.screenName);
 
-        TextView city = (TextView) v.findViewById(R.id.lr_fragment_directory_detail_city);
-        city.setText(user.city);
+     //   TextView city = (TextView) v.findViewById(R.id.lr_fragment_directory_detail_city);
+     //   city.setText(user.city);
 
         TextView phone = (TextView) v.findViewById(R.id.lr_fragment_directory_detail_phone);
         phone.setText(user.userPhone);
@@ -104,18 +122,26 @@ public class LRDirectoryDetailFragment extends Fragment {
         TextView skype = (TextView) v.findViewById(R.id.lr_fragment_directory_detail_skype);
         skype.setText(user.skypeName);
 
-        ImageView buttonSkype = (ImageView) v.findViewById(R.id.lr_fragment_directory_detail_skype_button);
+
+        RelativeLayout buttonSkype = (RelativeLayout) v.findViewById(R.id.lr_fragment_directory_detail_skype_button);
         buttonSkype.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Uri skypeUri = Uri.parse("skype:"+user.skypeName+"?call&video=true");
-
-
                 initiateSkypeUri(getActivity(), skypeUri);
             }
         });
 
-        ImageView buttonPhone = (ImageView) v.findViewById(R.id.lr_fragment_directory_detail_phone_button);
+        RelativeLayout buttonEmail = (RelativeLayout) v.findViewById(R.id.lr_fragment_directory_detail_email_button);
+        buttonEmail.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts("mailto", user.emailAddress, null));
+                startActivity(Intent.createChooser(emailIntent, getString(R.string.email)));
+            }
+        });
+
+        RelativeLayout buttonPhone = (RelativeLayout) v.findViewById(R.id.lr_fragment_directory_detail_phone_button);
     //    if(!isTelephonyEnabled())
     //        buttonPhone.setVisibility(View.GONE);
         buttonPhone.setOnClickListener(new View.OnClickListener() {
@@ -127,7 +153,49 @@ public class LRDirectoryDetailFragment extends Fragment {
             }
         });
 
+
+        ImageView emailIcon = (ImageView) v.findViewById(R.id.lr_fragment_directory_detail_email_icon);
+        emailIcon.setColorFilter(getResources().getColor(R.color.carrot), PorterDuff.Mode.SRC_ATOP);
+
+        ImageView phoneIcon = (ImageView) v.findViewById(R.id.lr_fragment_directory_detail_phone_icon);
+        phoneIcon.setColorFilter(getResources().getColor(R.color.carrot), PorterDuff.Mode.SRC_ATOP);
+
         return v;
+    }
+
+    private Target target = new Target() {
+        @Override
+        public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+            imageView.setImageBitmap(bitmap);
+            Bitmap bm = blurRenderScript(bitmap);
+            frame.setImageBitmap(bm);
+        }
+
+        @Override
+        public void onBitmapFailed(Drawable errorDrawable) {
+
+        }
+
+        @Override
+        public void onPrepareLoad(Drawable placeHolderDrawable) {
+
+        }
+    };
+
+
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
+    private Bitmap blurRenderScript(Bitmap smallBitmap) {
+        Bitmap output = Bitmap.createBitmap(smallBitmap.getWidth(), smallBitmap.getHeight(), smallBitmap.getConfig());
+        RenderScript rs = RenderScript.create(getActivity());
+        ScriptIntrinsicBlur script = ScriptIntrinsicBlur.create(rs, Element.U8_4(rs));
+        Allocation inAlloc = Allocation.createFromBitmap(rs, smallBitmap, Allocation.MipmapControl.MIPMAP_NONE, Allocation.USAGE_GRAPHICS_TEXTURE);
+        Allocation outAlloc = Allocation.createFromBitmap(rs, output);
+        script.setRadius(25);
+        script.setInput(inAlloc);
+        script.forEach(outAlloc);
+        outAlloc.copyTo(output);
+        rs.destroy();
+        return output;
     }
 
     private boolean isTelephonyEnabled(){

@@ -1,6 +1,6 @@
 package com.rivetlogic.liferayrivet.database;
 
-class TableRow {
+public class TableRow {
 	private String name;
 	private DbType type;
 	private Nullable nullable;
