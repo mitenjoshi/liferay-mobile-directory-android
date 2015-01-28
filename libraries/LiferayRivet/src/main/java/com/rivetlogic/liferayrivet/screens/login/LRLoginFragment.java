@@ -81,7 +81,7 @@ public class LRLoginFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        styleResId = R.style.lrThemeLoginViewDefault;
+        styleResId = R.style.LRThemeLoginViewDefault;
         setStyledAttributes();
         Bundle args = getArguments();
         if (args != null && args.containsKey(KEY_STYLE_ID)) {

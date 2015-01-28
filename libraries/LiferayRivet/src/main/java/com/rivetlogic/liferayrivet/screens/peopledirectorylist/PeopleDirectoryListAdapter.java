@@ -1,6 +1,8 @@
 package com.rivetlogic.liferayrivet.screens.peopledirectorylist;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,8 +29,18 @@ public class PeopleDirectoryListAdapter extends BaseAdapter implements Filterabl
 
     private ArrayList<User> filteredUsers;
 
+    private int iconColor;
+
+    private int selectedItem;
+
     public PeopleDirectoryListAdapter(Context context) {
         this.context = context;
+        this.iconColor = Color.GRAY;
+    }
+
+    public PeopleDirectoryListAdapter(Context context, int iconColor) {
+        this.context = context;
+        this.iconColor = iconColor;
     }
 
     public void updateAdapter(ArrayList<User> users) {
@@ -55,6 +67,11 @@ public class PeopleDirectoryListAdapter extends BaseAdapter implements Filterabl
         return 0;
     }
 
+    public void setSelected(int selectedItem) {
+        this.selectedItem = selectedItem;
+        notifyDataSetChanged();
+    }
+
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
@@ -68,10 +85,14 @@ public class PeopleDirectoryListAdapter extends BaseAdapter implements Filterabl
 
             holder.image = (ImageView) convertView.findViewById(R.id.lr_list_row_directory_image);
             holder.name = (TextView) convertView.findViewById(R.id.lr_list_row_directory_name);
-            holder.title = (TextView) convertView.findViewById(R.id.lr_list_row_directory_title);
-            holder.email = (TextView) convertView.findViewById(R.id.lr_list_row_directory_email);
+            holder.screenName = (TextView) convertView.findViewById(R.id.lr_list_row_directory_scren_name);
             holder.skypeIcon = (ImageView) convertView.findViewById(R.id.lr_list_row_directory_icon_skype);
             holder.phoneIcon = (ImageView) convertView.findViewById(R.id.lr_list_row_directory_icon_phone);
+            holder.emailIcon = (ImageView) convertView.findViewById(R.id.lr_list_row_directory_icon_email);
+            holder.pointer = convertView.findViewById(R.id.lr_list_row_directory_pointer);
+
+            holder.emailIcon.setColorFilter(iconColor, PorterDuff.Mode.SRC_ATOP);
+            holder.phoneIcon.setColorFilter(iconColor, PorterDuff.Mode.SRC_ATOP);
 
             convertView.setTag(holder);
         } else {
@@ -87,10 +108,19 @@ public class PeopleDirectoryListAdapter extends BaseAdapter implements Filterabl
                 .into(holder.image);
 
         holder.name.setText(user.fullName);
-        holder.title.setText(user.jobTitle);
-        holder.email.setText(user.emailAddress);
+        holder.screenName.setText(user.screenName);
         holder.phoneIcon.setVisibility(user.userPhone != null && user.userPhone.length() > 0 ? View.VISIBLE : View.GONE);
         holder.skypeIcon.setVisibility(user.skypeName != null && user.skypeName.length() > 0 ? View.VISIBLE : View.GONE);
+        holder.emailIcon.setVisibility(user.emailAddress != null && user.emailAddress.length() > 0 ? View.VISIBLE : View.GONE);
+
+        if(selectedItem == position)
+            holder.pointer.setVisibility(View.VISIBLE);
+        else
+            holder.pointer.setVisibility(View.GONE);
+
+
+        holder.emailIcon.setColorFilter(iconColor, PorterDuff.Mode.SRC_ATOP);
+        holder.phoneIcon.setColorFilter(iconColor, PorterDuff.Mode.SRC_ATOP);
 
         return convertView;
     }
@@ -98,10 +128,12 @@ public class PeopleDirectoryListAdapter extends BaseAdapter implements Filterabl
     class ViewHolder {
         public ImageView image;
         public TextView name;
-        public TextView title;
-        public TextView email;
+        public TextView screenName;
         public ImageView skypeIcon;
         public ImageView phoneIcon;
+        public ImageView emailIcon;
+        public View pointer;
+
     }
 
     @Override

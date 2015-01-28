@@ -26,7 +26,7 @@ public class PeopleDirectoryListFragment extends Fragment {
     private static final String KEY_STYLE_ID = "com.rivetlogic.liferay.screens.login.LRDirectoryListFragment_styleResId";
 
     private int styleResId;
-    private int layoutId;
+
     private ListView lv;
     private PeopleDirectoryListAdapter adapter;
 
@@ -35,8 +35,11 @@ public class PeopleDirectoryListFragment extends Fragment {
     private ProgressDialog pd;
 
     private ArrayList<User> users;
-    private ArrayList<User> filteredUsers;
+
     private SwipeRefreshLayout swipeLayout;
+
+
+    private int iconColor;
 
     public interface LRDirectoryListFragmentCallback {
         public void onItemClicked(User user);
@@ -69,21 +72,16 @@ public class PeopleDirectoryListFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Bundle args = getArguments();
-        if (args != null && args.containsKey(KEY_STYLE_ID)) {
-            styleResId = args.getInt(KEY_STYLE_ID);
-        }
-
         da = DataAccessPeopleDirectory.getInstance(getActivity());
 
-        @SuppressWarnings("ResourceType")
-        TypedArray a = getActivity().getApplicationContext().obtainStyledAttributes(R.style.lrThemeLoginViewDefault, R.styleable.LRLoginView);
-        setStyledAttributes(a);
-        if (styleResId > 0) {
-            a = getActivity().getApplicationContext().obtainStyledAttributes(styleResId, R.styleable.LRLoginView);
-            setStyledAttributes(a);
+        Bundle args = getArguments();
+        styleResId = R.style.LRThemeUserDetailDefault;
+        setStyledAttributes();
+        if (args != null && args.containsKey(KEY_STYLE_ID)) {
+            styleResId = args.getInt(KEY_STYLE_ID);
+            if (styleResId > 0)
+                setStyledAttributes();
         }
-        a.recycle();
     }
 
     @Override
@@ -91,13 +89,14 @@ public class PeopleDirectoryListFragment extends Fragment {
         View v = inflater.inflate(R.layout.lr_fragment_directory_list, null);
 
         lv = (ListView) v.findViewById(R.id.lr_fragment_directory_listview);
-        adapter = new PeopleDirectoryListAdapter(getActivity());
+        adapter = new PeopleDirectoryListAdapter(getActivity(), iconColor);
         lv.setAdapter(adapter);
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 User user = (User) adapter.getItem(position);
                 listener.onItemClicked(user);
+                adapter.setSelected(position);
             }
         });
 
@@ -121,13 +120,17 @@ public class PeopleDirectoryListFragment extends Fragment {
         return v;
     }
 
+    private void setStyledAttributes() {
+        TypedArray a = getActivity().getApplicationContext().obtainStyledAttributes(styleResId, R.styleable.LRUserListView);
+        if (a != null) {
+            try {
+                iconColor = a.getColor(R.styleable.LRUserListView_lrScreenUserListIconColor, iconColor);
 
-    private void setStyledAttributes(TypedArray a) {
-        try {
-
-        } finally {
-
+            } finally {
+                a.recycle();
+            }
         }
+
     }
 
     public void filterList(String input) {

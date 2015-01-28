@@ -50,6 +50,9 @@ public class LRDirectoryDetailFragment extends Fragment {
     private CircularImageView imageView;
     private ImageView frame;
 
+    private int iconColor;
+
+
     public static LRDirectoryDetailFragment newInstance(int styleResId, User user) {
         LRDirectoryDetailFragment fragment = new LRDirectoryDetailFragment();
         Bundle args = new Bundle();
@@ -77,14 +80,13 @@ public class LRDirectoryDetailFragment extends Fragment {
             user = (User) args.getSerializable(KEY_USER);
         }
 
-        @SuppressWarnings("ResourceType")
-        TypedArray a = getActivity().getApplicationContext().obtainStyledAttributes(R.style.lrThemeLoginViewDefault, R.styleable.LRLoginView);
-        setStyledAttributes(a);
-        if (styleResId > 0) {
-            a = getActivity().getApplicationContext().obtainStyledAttributes(styleResId, R.styleable.LRLoginView);
-            setStyledAttributes(a);
+        styleResId = R.style.LRThemeUserDetailDefault;
+        setStyledAttributes();
+        if (args != null && args.containsKey(KEY_STYLE_ID)) {
+            styleResId = args.getInt(KEY_STYLE_ID);
+            if (styleResId > 0)
+                setStyledAttributes();
         }
-        a.recycle();
 
     }
 
@@ -107,21 +109,14 @@ public class LRDirectoryDetailFragment extends Fragment {
         TextView email = (TextView) v.findViewById(R.id.lr_fragment_directory_detail_email);
         email.setText(user.emailAddress);
 
-     //   TextView title = (TextView) v.findViewById(R.id.lr_fragment_directory_detail_title);
-      //  title.setText(user.jobTitle);
-
         TextView screenName = (TextView) v.findViewById(R.id.lr_fragment_directory_detail_screen_name);
         screenName.setText(user.screenName);
-
-     //   TextView city = (TextView) v.findViewById(R.id.lr_fragment_directory_detail_city);
-     //   city.setText(user.city);
 
         TextView phone = (TextView) v.findViewById(R.id.lr_fragment_directory_detail_phone);
         phone.setText(user.userPhone);
 
         TextView skype = (TextView) v.findViewById(R.id.lr_fragment_directory_detail_skype);
         skype.setText(user.skypeName);
-
 
         RelativeLayout buttonSkype = (RelativeLayout) v.findViewById(R.id.lr_fragment_directory_detail_skype_button);
         buttonSkype.setOnClickListener(new View.OnClickListener() {
@@ -155,10 +150,10 @@ public class LRDirectoryDetailFragment extends Fragment {
 
 
         ImageView emailIcon = (ImageView) v.findViewById(R.id.lr_fragment_directory_detail_email_icon);
-        emailIcon.setColorFilter(getResources().getColor(R.color.carrot), PorterDuff.Mode.SRC_ATOP);
+        emailIcon.setColorFilter(iconColor, PorterDuff.Mode.SRC_ATOP);
 
         ImageView phoneIcon = (ImageView) v.findViewById(R.id.lr_fragment_directory_detail_phone_icon);
-        phoneIcon.setColorFilter(getResources().getColor(R.color.carrot), PorterDuff.Mode.SRC_ATOP);
+        phoneIcon.setColorFilter(iconColor, PorterDuff.Mode.SRC_ATOP);
 
         return v;
     }
@@ -167,8 +162,10 @@ public class LRDirectoryDetailFragment extends Fragment {
         @Override
         public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
             imageView.setImageBitmap(bitmap);
-            Bitmap bm = blurRenderScript(bitmap);
-            frame.setImageBitmap(bm);
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                Bitmap bm = blurRenderScript(bitmap);
+                frame.setImageBitmap(bm);
+            }
         }
 
         @Override
@@ -181,7 +178,6 @@ public class LRDirectoryDetailFragment extends Fragment {
 
         }
     };
-
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
     private Bitmap blurRenderScript(Bitmap smallBitmap) {
@@ -204,29 +200,14 @@ public class LRDirectoryDetailFragment extends Fragment {
     }
 
     public void initiateSkypeUri(Context myContext, Uri mySkypeUri) {
-
-        // Make sure the Skype for Android client is installed.
         if (!isSkypeClientInstalled(myContext)) {
             goToMarket(myContext);
             return;
         }
-
         Intent skype = new Intent("android.intent.action.VIEW");
         skype.setData(mySkypeUri);
-       // startActivity(skype);
-
-
-        // Create the Intent from our Skype URI.
-      //  Uri skypeUri = Uri.parse(mySkypeUri);
-     //   Intent myIntent = new Intent(Intent.ACTION_VIEW, skypeUri);
-
-        // Restrict the Intent to being handled by the Skype for Android client only.
         skype.setComponent(new ComponentName("com.skype.raider", "com.skype.raider.Main"));
         skype.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
-        // Initiate the Intent. It should never fail because you've already established the
-        // presence of its handler (although there is an extremely minute window where that
-        // handler can go away).
         startActivity(skype);
 
         return;
@@ -252,12 +233,16 @@ public class LRDirectoryDetailFragment extends Fragment {
         return;
     }
 
-    private void setStyledAttributes(TypedArray a) {
-        try {
+    private void setStyledAttributes() {
+        TypedArray a = getActivity().getApplicationContext().obtainStyledAttributes(styleResId, R.styleable.LRUserDetailView);
+        if (a != null) {
+            try {
+                iconColor = a.getColor(R.styleable.LRUserDetailView_lrScreenUserDetailIconColor, iconColor);
 
-        } finally {
-
+            } finally {
+                a.recycle();
+            }
         }
-    }
 
+    }
 }

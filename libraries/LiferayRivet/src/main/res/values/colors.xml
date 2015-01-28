@@ -3,9 +3,7 @@
 
     <color name="lr_white">#ffffffff</color>
     <color name="lr_black">#ff000000</color>
-    <color name="lr_transparent">#00000000</color>
-
-    <color name="rivet_orange">#fff58220</color>
+    <color name="lr_transparent">#00ffffff</color>
 
     <color name="skype_blue">#ff00b8ed</color>
     <color name="skype_blue_pressed">#ff47c8ed</color>

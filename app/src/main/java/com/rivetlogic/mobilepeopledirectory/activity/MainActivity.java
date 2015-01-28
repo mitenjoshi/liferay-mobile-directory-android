@@ -38,7 +38,6 @@ public class MainActivity extends ActionBarActivity implements LRLoginFragment.L
     private static final String TAG_LIST_FRAGMENT = "com.rivetlogic.liferay.screens.login.LRDirectoryListFragment";
     private static final String TAG_DETAIL_FRAGMENT = "com.rivetlogic.liferay.screens.login.LRDirectoryDetailFragment";
 
-    private FrameLayout mainContainer;
     private Menu menu;
     private SearchView searchView;
 
@@ -55,8 +54,6 @@ public class MainActivity extends ActionBarActivity implements LRLoginFragment.L
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mainContainer = (FrameLayout) findViewById(R.id.main_container);
-
         getSupportFragmentManager().addOnBackStackChangedListener(mOnBackStackChangedListener);
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
 
@@ -68,7 +65,7 @@ public class MainActivity extends ActionBarActivity implements LRLoginFragment.L
                 addLoginFragment();
             }
             else {
-                addDirectoryListFragment();
+               addDirectoryListFragment();
             }
         }
 
@@ -153,29 +150,36 @@ public class MainActivity extends ActionBarActivity implements LRLoginFragment.L
         final Fragment prev = fm.findFragmentByTag(TAG_LIST_FRAGMENT);
         if (prev == null) {
             getSupportActionBar().show();
-            PeopleDirectoryListFragment loginFragment = PeopleDirectoryListFragment.newInstance(R.style.CustomLoginTheme);
+            PeopleDirectoryListFragment loginFragment = PeopleDirectoryListFragment.newInstance(R.style.CustomListTheme);
             ft.replace(R.id.main_container, loginFragment, TAG_LIST_FRAGMENT);
             ft.commit();
         }
-
-
     }
 
     public void addDirectoryDetailFragment(User user) {
         FragmentManager fm = getSupportFragmentManager();
         final FragmentTransaction ft = fm.beginTransaction();
-        final Fragment prev = fm.findFragmentByTag(TAG_DETAIL_FRAGMENT);
-        if (prev == null) {
-            LRDirectoryDetailFragment detailFragment = LRDirectoryDetailFragment.newInstance(R.style.CustomLoginTheme, user);
-            ft.setCustomAnimations(
-                    R.anim.fragment_slide_left_enter,
-                    R.anim.fragment_slide_left_exit,
-                    R.anim.fragment_slide_right_enter,
-                    R.anim.fragment_slide_right_exit);
-            ft.replace(R.id.main_container, detailFragment, TAG_DETAIL_FRAGMENT);
-            ft.addToBackStack(TAG_DETAIL_FRAGMENT);
+        final LRDirectoryDetailFragment prev = (LRDirectoryDetailFragment) fm.findFragmentByTag(TAG_DETAIL_FRAGMENT);
+      //  if (prev == null) {
+            LRDirectoryDetailFragment detailFragment = LRDirectoryDetailFragment.newInstance(R.style.CustomDetailTheme, user);
+
+            if(getResources().getBoolean(R.bool.tablet_10)) {
+                ft.replace(R.id.detail_container, detailFragment, TAG_DETAIL_FRAGMENT);
+            }
+
+            else {
+                ft.setCustomAnimations(
+                        R.anim.fragment_slide_left_enter,
+                        R.anim.fragment_slide_left_exit,
+                        R.anim.fragment_slide_right_enter,
+                        R.anim.fragment_slide_right_exit);
+                ft.replace(R.id.main_container, detailFragment, TAG_DETAIL_FRAGMENT);
+                ft.addToBackStack(TAG_DETAIL_FRAGMENT);
+            }
+
             ft.commit();
-        }
+     //   }
+
     }
 
     @Override

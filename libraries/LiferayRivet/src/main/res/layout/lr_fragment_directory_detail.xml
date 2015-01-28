@@ -4,7 +4,7 @@
     android:orientation="vertical"
     android:background="@color/lr_black_05"
     android:layout_width="match_parent"
-    android:paddingBottom="4dp"
+    android:paddingBottom="2dp"
     android:layout_height="match_parent">
 
     <FrameLayout
@@ -61,14 +61,14 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_skype_white"
+            android:src="@drawable/ic_skype_36dp"
             android:background="@drawable/button_skype"
             android:clickable="true" />
 
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_phone_white"
+            android:src="@drawable/ic_call_grey600_24dp"
             android:layout_marginLeft="12dp"
             android:background="@drawable/button_phone"
             android:clickable="true" />
@@ -84,13 +84,10 @@
 
         <ImageView
             android:id="@+id/lr_fragment_directory_detail_phone_icon"
-            android:paddingTop="16dp"
-            android:paddingBottom="16dp"
-            android:paddingLeft="24dp"
-            android:paddingRight="18dp"
+            android:padding="20dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/lr_ic_action_call" />
+            android:src="@drawable/ic_call_grey600_24dp" />
 
         <LinearLayout
             android:layout_toRightOf="@id/lr_fragment_directory_detail_phone_icon"
@@ -135,13 +132,10 @@
 
         <ImageView
             android:id="@+id/lr_fragment_directory_detail_email_icon"
-            android:paddingTop="16dp"
-            android:paddingBottom="16dp"
-            android:paddingLeft="24dp"
-            android:paddingRight="18dp"
+            android:padding="20dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/lr_ic_action_email" />
+            android:src="@drawable/ic_email_grey600_24dp" />
 
         <LinearLayout
             android:layout_toRightOf="@id/lr_fragment_directory_detail_email_icon"
@@ -183,13 +177,10 @@
 
         <ImageView
             android:id="@+id/lr_fragment_directory_detail_skype_icon"
-            android:paddingTop="16dp"
-            android:paddingBottom="16dp"
-            android:paddingLeft="24dp"
-            android:paddingRight="18dp"
+            android:padding="20dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/lr_ic_skype_large" />
+            android:src="@drawable/ic_skype_24dp" />
 
         <LinearLayout
             android:layout_toRightOf="@id/lr_fragment_directory_detail_skype_icon"

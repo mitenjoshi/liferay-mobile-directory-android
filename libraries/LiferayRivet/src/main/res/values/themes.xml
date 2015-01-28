@@ -1,24 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="lrThemeLoginViewDefault">
+    <style name="LRThemeLoginViewDefault">
 
         <item name="lrTheme">@layout/lr_fragment_login_default</item>
         <item name="lrScreenLoginLayoutBackground">@color/lr_white</item>
 
         <item name="lrScreenLoginButtonText">@string/sign_in</item>
         <item name="lrScreenLoginButtonTextColor">@color/lr_black_60</item>
-        <item name="lrScreenLoginButtonBackgroundColor">@color/rivet_orange</item>
+        <item name="lrScreenLoginButtonBackgroundColor">@color/skype_blue</item>
 
         <item name="lrScreenLoginEmailTextColor">@color/lr_black_60</item>
         <item name="lrScreenLoginEmailTextHint">@string/email</item>
         <item name="lrScreenLoginEmailTextHintColor">@color/lr_black_20</item>
-        <item name="lrScreenLoginEmailDrawable">@drawable/lr_ic_action_email</item>
+        <item name="lrScreenLoginEmailDrawable">@drawable/ic_email_grey600_24dp</item>
 
         <item name="lrScreenLoginPasswordTextColor">@color/lr_black_60</item>
         <item name="lrScreenLoginPasswordTextHint">@string/password</item>
         <item name="lrScreenLoginPasswordTextHintColor">@color/lr_black_20</item>
-        <item name="lrScreenLoginPasswordDrawable">@drawable/lr_ic_action_secure</item>
+        <item name="lrScreenLoginPasswordDrawable">@drawable/ic_lock_grey600_24dp</item>
+
+    </style>
+
+    <style name="LRThemeUserDetailDefault">
+
+        <item name="lrScreenUserDetailIconColor">@color/alizarin</item>
+
+    </style>
+
+
+
+    <style name="LRThemeUserListDefault">
+
+        <item name="lrScreenUserListIconColor">@color/alizarin</item>
 
     </style>
 

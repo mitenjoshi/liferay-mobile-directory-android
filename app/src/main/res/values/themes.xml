@@ -1,12 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-
     <style name="CustomLoginTheme" >
         <item name="lrScreenLoginLayoutBackground">@drawable/background_gradient</item>
         <item name="lrScreenLoginButtonTextColor">@color/white</item>
-        <item name="lrScreenLoginButtonBackgroundColor">@color/pomegranate</item>
+        <item name="lrScreenLoginButtonBackgroundColor">@color/rivet_orange</item>
     </style>
 
+    <style name="CustomDetailTheme" >
+        <item name="lrScreenUserDetailIconColor">@color/rivet_orange</item>
+    </style>
+
+    <style name="CustomListTheme" >
+        <item name="lrScreenUserListIconColor">@color/rivet_orange</item>
+    </style>
 
 </resources>
