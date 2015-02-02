@@ -19,9 +19,11 @@ import android.support.v7.widget.SearchView;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.Window;
 import android.widget.FrameLayout;
 
+import com.crashlytics.android.Crashlytics;
 import com.rivetlogic.liferayrivet.screens.peopledirectorydetail.LRDirectoryDetailFragment;
 import com.rivetlogic.liferayrivet.screens.peopledirectorylist.PeopleDirectoryListFragment;
 import com.rivetlogic.liferayrivet.screens.peopledirectorylist.User;
@@ -52,21 +54,26 @@ public class MainActivity extends ActionBarActivity implements LRLoginFragment.L
 
         setTheme(R.style.MPDTheme);
         super.onCreate(savedInstanceState);
+        Crashlytics.start(this);
         setContentView(R.layout.activity_main);
 
         getSupportFragmentManager().addOnBackStackChangedListener(mOnBackStackChangedListener);
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-
 
         SettingsUtil.init(this);
         if (savedInstanceState == null) {
             if (SettingsUtil.getLogin() == null || SettingsUtil.getLogin().length() == 0 ||
                     SettingsUtil.getPassword() == null || SettingsUtil.getPassword().length() == 0) {
                 addLoginFragment();
+            } else {
+                addDirectoryListFragment();
             }
-            else {
-               addDirectoryListFragment();
-            }
+        } else {
+            FragmentManager fm = getSupportFragmentManager();
+            Fragment prev = fm.findFragmentByTag(TAG_LOGIN_FRAGMENT);
+            if (prev != null)
+                getSupportActionBar().hide();
+
         }
 
     }
@@ -76,13 +83,14 @@ public class MainActivity extends ActionBarActivity implements LRLoginFragment.L
         public void onBackStackChanged() {
             int backStackEntryCount = getSupportFragmentManager().getBackStackEntryCount();
             if (backStackEntryCount == 0) {
-                getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+                searchView.setVisibility(View.VISIBLE);
                 menu.findItem(R.id.action_search).setVisible(true);
-
+                getSupportActionBar().setDisplayHomeAsUpEnabled(false);
             } else {
-                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-                searchView.setIconified(true);
+                menu.findItem(R.id.action_search).collapseActionView();
+                searchView.setVisibility(View.GONE);
                 menu.findItem(R.id.action_search).setVisible(false);
+                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             }
         }
     };
@@ -93,12 +101,19 @@ public class MainActivity extends ActionBarActivity implements LRLoginFragment.L
         this.menu = menu;
         searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
         searchView.setOnQueryTextListener(searchListener);
+
+        FragmentManager fm = getSupportFragmentManager();
+        Fragment prev = fm.findFragmentByTag(TAG_DETAIL_FRAGMENT);
+        if (prev != null) {
+            searchView.setVisibility(View.GONE);
+            menu.findItem(R.id.action_search).setVisible(false);
+        }
+
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
         switch (item.getItemId()) {
             case android.R.id.home:
                 super.onBackPressed();
@@ -110,7 +125,6 @@ public class MainActivity extends ActionBarActivity implements LRLoginFragment.L
                 addLoginFragment();
                 return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -124,8 +138,8 @@ public class MainActivity extends ActionBarActivity implements LRLoginFragment.L
         public boolean onQueryTextChange(String s) {
             FragmentManager fm = getSupportFragmentManager();
             PeopleDirectoryListFragment fragment = (PeopleDirectoryListFragment) fm.findFragmentByTag(TAG_LIST_FRAGMENT);
-            if(fragment != null)
-                   fragment.filterList(s);
+            if (fragment != null)
+                fragment.filterList(s);
             return true;
         }
     };
@@ -135,10 +149,10 @@ public class MainActivity extends ActionBarActivity implements LRLoginFragment.L
         final FragmentTransaction ft = fm.beginTransaction();
         final Fragment prev = fm.findFragmentByTag(TAG_LOGIN_FRAGMENT);
         if (prev == null) {
-            fm.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            getSupportActionBar().setShowHideAnimationEnabled(false);
             getSupportActionBar().hide();
+            fm.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
             LRLoginFragment loginFragment = LRLoginFragment.newInstance(R.style.CustomLoginTheme);
-
             ft.replace(R.id.main_container, loginFragment, TAG_LOGIN_FRAGMENT);
             ft.commit();
         }
@@ -150,36 +164,40 @@ public class MainActivity extends ActionBarActivity implements LRLoginFragment.L
         final Fragment prev = fm.findFragmentByTag(TAG_LIST_FRAGMENT);
         if (prev == null) {
             getSupportActionBar().show();
-            PeopleDirectoryListFragment loginFragment = PeopleDirectoryListFragment.newInstance(R.style.CustomListTheme);
-            ft.replace(R.id.main_container, loginFragment, TAG_LIST_FRAGMENT);
-            ft.commit();
+            PeopleDirectoryListFragment listFragment = PeopleDirectoryListFragment.newInstance(R.style.CustomListTheme);
+
+            if (getResources().getBoolean(R.bool.tablet_10)) {
+                ft.replace(R.id.list_container, listFragment, TAG_DETAIL_FRAGMENT);
+
+                final Fragment frag = fm.findFragmentByTag(TAG_LOGIN_FRAGMENT);
+                if (frag != null) {
+                    ft.remove(frag);
+                }
+                ft.commit();
+
+            } else {
+                ft.replace(R.id.main_container, listFragment, TAG_LIST_FRAGMENT);
+                ft.commit();
+            }
         }
     }
 
     public void addDirectoryDetailFragment(User user) {
         FragmentManager fm = getSupportFragmentManager();
         final FragmentTransaction ft = fm.beginTransaction();
-        final LRDirectoryDetailFragment prev = (LRDirectoryDetailFragment) fm.findFragmentByTag(TAG_DETAIL_FRAGMENT);
-      //  if (prev == null) {
-            LRDirectoryDetailFragment detailFragment = LRDirectoryDetailFragment.newInstance(R.style.CustomDetailTheme, user);
-
-            if(getResources().getBoolean(R.bool.tablet_10)) {
-                ft.replace(R.id.detail_container, detailFragment, TAG_DETAIL_FRAGMENT);
-            }
-
-            else {
-                ft.setCustomAnimations(
-                        R.anim.fragment_slide_left_enter,
-                        R.anim.fragment_slide_left_exit,
-                        R.anim.fragment_slide_right_enter,
-                        R.anim.fragment_slide_right_exit);
-                ft.replace(R.id.main_container, detailFragment, TAG_DETAIL_FRAGMENT);
-                ft.addToBackStack(TAG_DETAIL_FRAGMENT);
-            }
-
-            ft.commit();
-     //   }
-
+        LRDirectoryDetailFragment detailFragment = LRDirectoryDetailFragment.newInstance(R.style.CustomDetailTheme, user);
+        if (getResources().getBoolean(R.bool.tablet_10)) {
+            ft.replace(R.id.detail_container, detailFragment, TAG_DETAIL_FRAGMENT);
+        } else {
+            ft.setCustomAnimations(
+                    R.anim.fragment_slide_left_enter,
+                    R.anim.fragment_slide_left_exit,
+                    R.anim.fragment_slide_right_enter,
+                    R.anim.fragment_slide_right_exit);
+            ft.replace(R.id.main_container, detailFragment, TAG_DETAIL_FRAGMENT);
+            ft.addToBackStack(TAG_DETAIL_FRAGMENT);
+        }
+        ft.commit();
     }
 
     @Override

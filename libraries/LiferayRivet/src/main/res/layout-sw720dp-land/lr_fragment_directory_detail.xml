@@ -11,8 +11,6 @@
         android:id="@+id/lr_fragment_directory_detail_image_container"
         android:layout_width="match_parent"
         android:layout_weight=".35"
-        android:layout_marginLeft="32dp"
-        android:layout_marginRight="32dp"
         android:layout_height="0dp">
 
         <ImageView
@@ -20,7 +18,6 @@
             android:layout_width="match_parent"
             android:adjustViewBounds="true"
             android:scaleType="centerCrop"
-            android:background="@color/lr_black_10"
             android:layout_height="match_parent" />
 
         <com.rivetlogic.liferayrivet.component.CircularImageView
@@ -37,8 +34,6 @@
         android:orientation="vertical"
         android:layout_weight=".65"
         android:gravity="center"
-        android:layout_marginLeft="64dp"
-        android:layout_marginRight="64dp"
         android:layout_height="0dp">
 
         <TextView
@@ -46,7 +41,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:includeFontPadding="false"
-            android:textSize="36dp"
+            android:textSize="29dp"
             android:fontFamily="sans-serif-light"
             android:gravity="center"
             android:textColor="@color/lr_black_70" />
@@ -57,9 +52,9 @@
             android:layout_height="wrap_content"
             android:includeFontPadding="false"
             android:gravity="center"
-            android:layout_marginBottom="24dp"
+            android:layout_marginBottom="15dp"
             android:textColor="@color/lr_black_40"
-            android:textSize="24dp" />
+            android:textSize="18dp" />
 
         <RelativeLayout
             android:id="@+id/lr_fragment_directory_detail_skype_button"
@@ -72,7 +67,7 @@
                 android:padding="20dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_skype_36dp" />
+                android:src="@drawable/ic_skype_24dp" />
 
             <LinearLayout
                 android:layout_toRightOf="@id/lr_fragment_directory_detail_skype_icon"
@@ -86,14 +81,14 @@
                     android:textColor="@color/lr_black_80"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="20dp"
+                    android:textSize="16dp"
                     android:text="@string/skype" />
 
                 <TextView
                     android:id="@+id/lr_fragment_directory_detail_skype"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="18dp"
+                    android:textSize="14dp"
                     android:textColor="@color/lr_black_40" />
 
             </LinearLayout>
@@ -118,7 +113,7 @@
                 android:padding="20dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_email_grey600_36dp" />
+                android:src="@drawable/ic_email_grey600_24dp" />
 
             <LinearLayout
                 android:layout_toRightOf="@id/lr_fragment_directory_detail_email_icon"
@@ -132,14 +127,14 @@
                     android:textColor="@color/lr_black_80"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="20dp"
+                    android:textSize="16dp"
                     android:text="@string/email" />
 
                 <TextView
                     android:id="@+id/lr_fragment_directory_detail_email"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="18dp"
+                    android:textSize="14dp"
                     android:textColor="@color/lr_black_40" />
 
             </LinearLayout>
@@ -164,7 +159,7 @@
                 android:padding="20dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_call_grey600_36dp" />
+                android:src="@drawable/ic_call_grey600_24dp" />
 
             <LinearLayout
                 android:layout_toRightOf="@id/lr_fragment_directory_detail_phone_icon"
@@ -178,14 +173,14 @@
                     android:textColor="@color/lr_black_80"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="20dp"
+                    android:textSize="16dp"
                     android:text="@string/phone" />
 
                 <TextView
                     android:id="@+id/lr_fragment_directory_detail_phone"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="18dp"
+                    android:textSize="14dp"
                     android:textColor="@color/lr_black_40" />
 
             </LinearLayout>
