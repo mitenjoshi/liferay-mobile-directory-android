@@ -1,10 +1,9 @@
-package com.rivetlogic.liferayrivet.screens.login;
+package com.rivetlogic.liferayrivet.screens.peopledirectorylist;
 
 import android.os.AsyncTask;
 
 import com.liferay.mobile.android.service.Session;
-import com.rivetlogic.liferayrivet.screens.peopledirectorylist.PeopleDirectory;
-import com.rivetlogic.liferayrivet.screens.peopledirectorylist.PeopleDirectoryService;
+import com.liferay.mobile.android.v62.user.UserService;
 import com.rivetlogic.liferayrivet.util.SettingsUtil;
 
 import org.json.JSONObject;
@@ -47,6 +46,16 @@ public class PeopleDirectorySearchTask extends AsyncTask<Void, String, PeopleDir
     @Override
     protected PeopleDirectory doInBackground(Void... params) {
         Session session = SettingsUtil.getSession();
+
+
+        UserService service = new UserService(session);
+
+        try {
+            JSONObject json = service.getUserByEmailAddress(1234, SettingsUtil.getLogin());
+        } catch (Exception e1) {
+            e1.printStackTrace();
+        }
+
         PeopleDirectoryService ser = new PeopleDirectoryService(session);
         try {
             JSONObject json = ser.search(keywords, start, end);
