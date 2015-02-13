@@ -1,41 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <declare-styleable name="LRTheme">
-
-    </declare-styleable>
     <declare-styleable name="LRLoginView">
 
-        <attr name="lrTheme" format="reference" />
-        <attr name="lrScreenLoginLayoutBackground" format="reference" />
+        <attr name="lrScreenLoginImageBackground" format="reference" />
+        <attr name="lrScreenLoginImageTop" format="reference" />
+        <attr name="lrScreenLoginImageBottom" format="reference" />
 
         <attr name="lrScreenLoginButtonText" format="string" />
         <attr name="lrScreenLoginButtonTextColor" format="color" />
         <attr name="lrScreenLoginButtonBackgroundColor" format="color" />
 
-        <attr name="lrScreenLoginEmailTextColor" format="color" />
-        <attr name="lrScreenLoginEmailTextHint" format="string" />
-        <attr name="lrScreenLoginEmailTextHintColor" format="color" />
-        <attr name="lrScreenLoginEmailDrawable" format="reference" />
+        <attr name="lrScreenLoginUserTextColor" format="color" />
+        <attr name="lrScreenLoginUserTextHint" format="string" />
+        <attr name="lrScreenLoginUserTextHintColor" format="color" />
+        <attr name="lrScreenLoginUserDrawable" format="reference" />
 
         <attr name="lrScreenLoginPasswordTextColor" format="integer" />
         <attr name="lrScreenLoginPasswordTextHint" format="string" />
         <attr name="lrScreenLoginPasswordTextHintColor" format="integer" />
         <attr name="lrScreenLoginPasswordDrawable" format="reference" />
 
-    </declare-styleable>
+        <attr name="lrScreenLoginOptionsTextColor" format="color" />
+        <attr name="lrScreenLoginOption1Text" format="string" />
+        <attr name="lrScreenLoginOption2Text" format="string" />
 
-    <declare-styleable name="LRUserDetailView">
-        <attr name="lrScreenUserDetailIconColor" format="color" />
-    </declare-styleable>
-
-    <declare-styleable name="LRUserListView">
-        <attr name="lrScreenUserListIconColor" format="color" />
-    </declare-styleable>
-
-    <declare-styleable name="CircularImageView">
-        <attr name="border_width" format="dimension" />
-        <attr name="border_color" format="color" />
     </declare-styleable>
 
 </resources>

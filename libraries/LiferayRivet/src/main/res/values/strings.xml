@@ -1,17 +1,10 @@
 <resources>
     <string name="app_name">Liferay Rivet Test</string>
 
-    <string name="email">Email</string>
-    <string name="password">Password</string>
+    <string name="lr_username">Username</string>
+    <string name="lr_password">Password</string>
     <string name="sign_in">SIGN IN</string>
 
-    <string name="job_title">Job Title:</string>
-    <string name="screen_name">Screen Name:</string>
-    <string name="city">City:</string>
-    <string name="phone">Phone:</string>
-    <string name="skype">Skype:</string>
-
-
-    <string name="msg_updating_people_directory">Updating people Directory</string>
     <string name="msg_signing_in">Signing In</string>
+
 </resources>

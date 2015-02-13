@@ -11,15 +11,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.rivetlogic.liferayrivet.R;
 import com.rivetlogic.liferayrivet.component.ShapeRoundRectStroke;
 import com.rivetlogic.liferayrivet.component.StateListRect;
-import com.rivetlogic.liferayrivet.screens.peopledirectorylist.PeopleDirectory;
 import com.rivetlogic.liferayrivet.util.SettingsUtil;
 import com.rivetlogic.liferayrivet.util.ToastUtil;
+
+import org.json.JSONObject;
 
 /**
  * Created by lorenz on 1/13/15.
@@ -31,32 +34,45 @@ public class LRLoginFragment extends Fragment {
     private LRLoginFragmentCallback listener;
 
     private int styleResId;
-    private int layoutId;
 
     private int backgroundRes;
+    private int topImageRes;
+    private int bottomImageRes;
 
-    private EditText email;
+    private EditText user;
     private EditText password;
     private TextView submitButton;
+
+    private TextView option1;
+    private TextView option2;
+    private View optionDiv;
+    private String option1Text;
+    private String option2Text;
 
     private String buttonText;
     private int buttonTextColor;
     private int buttonBackgroundColor;
 
-    private int emailTextColor;
-    private String emailTextHint;
-    private int emailTextHintColor;
-    private int emailDrawable;
+    private int userTextColor;
+    private String userTextHint;
+    private int userTextHintColor;
+    private int userDrawable;
 
     private int passwordTextColor;
     private String passwordTextHint;
     private int passwordTextHintColor;
     private int passwordDrawable;
 
+    private int passwordForgotTextColor;
+
     private ProgressDialog pd;
 
     public interface LRLoginFragmentCallback {
         public void onLoginSuccess();
+
+        public void onLoginOption1Clicked();
+
+        public void onLoginOption2Clicked();
     }
 
     public static LRLoginFragment newInstance() {
@@ -93,11 +109,15 @@ public class LRLoginFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View v = inflater.inflate(layoutId, null);
+        View v = inflater.inflate(R.layout.lr_fragment_login, null);
 
         submitButton = (TextView) v.findViewById(R.id.lr_login_submit);
-        email = (EditText) v.findViewById(R.id.lr_login_email);
+        user = (EditText) v.findViewById(R.id.lr_login_user);
         password = (EditText) v.findViewById(R.id.lr_login_password);
+
+        optionDiv = v.findViewById(R.id.lr_login_options_div);
+        option1 = (TextView) v.findViewById(R.id.lr_login_option_1);
+        option2 = (TextView) v.findViewById(R.id.lr_login_option_2);
 
         float radius = getResources().getDimension(R.dimen.corner_radius);
         float strokeWidth = getResources().getDimension(R.dimen.stroke_width);
@@ -107,32 +127,57 @@ public class LRLoginFragment extends Fragment {
         submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SettingsUtil.setLogin(email.getText().toString());
-                SettingsUtil.setPassword(password.getText().toString());
-
-                PeopleDirectorySearchTask searchTask = new PeopleDirectorySearchTask(callback, "", 0, 0);
-                searchTask.execute();
+                login();
             }
         });
 
-        RelativeLayout background = (RelativeLayout) v.findViewById(R.id.lr_login_background);
-        background.setBackgroundResource(backgroundRes);
+        ImageView background = (ImageView) v.findViewById(R.id.lr_login_background);
+        background.setImageResource(backgroundRes);
+
+        ImageView topImage = (ImageView) v.findViewById(R.id.lr_login_image_top);
+        topImage.setImageResource(topImageRes);
+
+        ImageView bottomImage = (ImageView) v.findViewById(R.id.lr_login_image_bottom);
+        bottomImage.setImageResource(bottomImageRes);
 
         Drawable textDrawable = new ShapeRoundRectStroke(buttonBackgroundColor, 0f, radius, radius, radius, radius, 255, strokeWidth);
-        email.setBackground(textDrawable);
+        user.setBackground(textDrawable);
         password.setBackground(textDrawable);
 
-        email.setHint(emailTextHint);
-        email.setTextColor(emailTextColor);
-        email.setHintTextColor(emailTextHintColor);
-        email.setCompoundDrawablesWithIntrinsicBounds(getResources().getDrawable(emailDrawable), null, null, null);
+        user.setHint(userTextHint);
+        user.setTextColor(userTextColor);
+        user.setHintTextColor(userTextHintColor);
+        if(userDrawable > 0)
+        user.setCompoundDrawablesWithIntrinsicBounds(getResources().getDrawable(userDrawable), null, null, null);
 
         password.setHint(passwordTextHint);
         password.setTextColor(passwordTextColor);
         password.setHintTextColor(passwordTextHintColor);
+        if(passwordDrawable > 0)
         password.setCompoundDrawablesWithIntrinsicBounds(getResources().getDrawable(passwordDrawable), null, null, null);
 
-        email.setText(SettingsUtil.getLogin());
+        optionDiv.setBackgroundColor(passwordForgotTextColor);
+        option1.setTextColor(passwordForgotTextColor);
+        option2.setTextColor(passwordForgotTextColor);
+
+        option1.setText(option1Text);
+        option1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listener.onLoginOption1Clicked();
+            }
+        });
+        option2.setText(option2Text);
+        option2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listener.onLoginOption2Clicked();
+            }
+        });
+        if(option1Text == null || option2Text == null)
+            optionDiv.setVisibility(View.GONE);
+
+        user.setText(SettingsUtil.getLogin());
         password.setText(SettingsUtil.getPassword());
 
         return v;
@@ -142,8 +187,10 @@ public class LRLoginFragment extends Fragment {
         TypedArray a = getActivity().getApplicationContext().obtainStyledAttributes(styleResId, R.styleable.LRLoginView);
         if(a != null) {
             try {
-                layoutId = a.getResourceId(R.styleable.LRLoginView_lrTheme, layoutId);
-                backgroundRes = a.getResourceId(R.styleable.LRLoginView_lrScreenLoginLayoutBackground, backgroundRes);
+
+                backgroundRes = a.getResourceId(R.styleable.LRLoginView_lrScreenLoginImageBackground, backgroundRes);
+                topImageRes = a.getResourceId(R.styleable.LRLoginView_lrScreenLoginImageTop, topImageRes);
+                bottomImageRes = a.getResourceId(R.styleable.LRLoginView_lrScreenLoginImageBottom, bottomImageRes);
 
                 buttonTextColor = a.getColor(R.styleable.LRLoginView_lrScreenLoginButtonTextColor, buttonTextColor);
                 String src = a.getString(R.styleable.LRLoginView_lrScreenLoginButtonText);
@@ -151,19 +198,23 @@ public class LRLoginFragment extends Fragment {
                     buttonText = src;
                 buttonBackgroundColor = a.getColor(R.styleable.LRLoginView_lrScreenLoginButtonBackgroundColor, buttonBackgroundColor);
 
-                emailTextColor = a.getColor(R.styleable.LRLoginView_lrScreenLoginEmailTextColor, emailTextColor);
-                src = a.getString(R.styleable.LRLoginView_lrScreenLoginEmailTextHint);
+                userTextColor = a.getColor(R.styleable.LRLoginView_lrScreenLoginUserTextColor, userTextColor);
+                src = a.getString(R.styleable.LRLoginView_lrScreenLoginUserTextHint);
                 if (src != null)
-                    emailTextHint = src;
-                emailTextHintColor = a.getColor(R.styleable.LRLoginView_lrScreenLoginEmailTextHintColor, emailTextHintColor);
-                emailDrawable = a.getResourceId(R.styleable.LRLoginView_lrScreenLoginEmailDrawable, emailDrawable);
+                    userTextHint = src;
+                userTextHintColor = a.getColor(R.styleable.LRLoginView_lrScreenLoginUserTextHintColor, userTextHintColor);
+                userDrawable = a.getResourceId(R.styleable.LRLoginView_lrScreenLoginUserDrawable, 0);
 
                 passwordTextColor = a.getColor(R.styleable.LRLoginView_lrScreenLoginPasswordTextColor, passwordTextColor);
                 src = a.getString(R.styleable.LRLoginView_lrScreenLoginPasswordTextHint);
                 if (src != null)
                     passwordTextHint = src;
                 passwordTextHintColor = a.getColor(R.styleable.LRLoginView_lrScreenLoginPasswordTextHintColor, passwordTextHintColor);
-                passwordDrawable = a.getResourceId(R.styleable.LRLoginView_lrScreenLoginPasswordDrawable, passwordDrawable);
+                passwordDrawable = a.getResourceId(R.styleable.LRLoginView_lrScreenLoginPasswordDrawable, 0);
+
+                passwordForgotTextColor = a.getColor(R.styleable.LRLoginView_lrScreenLoginOptionsTextColor, passwordForgotTextColor);
+                option1Text = a.getString(R.styleable.LRLoginView_lrScreenLoginOption1Text);
+                option2Text = a.getString(R.styleable.LRLoginView_lrScreenLoginOption2Text);
 
             } finally {
                 a.recycle();
@@ -171,7 +222,21 @@ public class LRLoginFragment extends Fragment {
         }
     }
 
-    private PeopleDirectorySearchTask.PeopleDirectorySearchTaskCallback callback = new PeopleDirectorySearchTask.PeopleDirectorySearchTaskCallback() {
+    public void autoLogin(String e, String p) {
+        user.setText(e);
+        password.setText(p);
+        login();
+    }
+
+    private void login() {
+        SettingsUtil.setLogin(user.getText().toString());
+        SettingsUtil.setPassword(password.getText().toString());
+
+        UserTask userTask = new UserTask(callback);
+        userTask.execute();
+    }
+
+    private UserTask.UserTaskCallback callback = new UserTask.UserTaskCallback() {
         @Override
         public void onPreExecute() {
             pd = ProgressDialog.show(getActivity(), null, null);
@@ -179,7 +244,7 @@ public class LRLoginFragment extends Fragment {
         }
 
         @Override
-        public void onSuccess(PeopleDirectory dir) {
+        public void onSuccess(JSONObject obj) {
             listener.onLoginSuccess();
             if (pd != null && pd.isShowing()) {
                 pd.dismiss();
@@ -191,7 +256,7 @@ public class LRLoginFragment extends Fragment {
             if (pd != null && pd.isShowing()) {
                 pd.dismiss();
             }
-            ToastUtil.show(getActivity(), error, true);
+            ToastUtil.show(getActivity(), error, false);
         }
     };
 

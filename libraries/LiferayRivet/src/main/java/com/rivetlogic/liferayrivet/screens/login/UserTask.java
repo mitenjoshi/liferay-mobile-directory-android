@@ -4,8 +4,6 @@ import android.os.AsyncTask;
 
 import com.liferay.mobile.android.service.Session;
 import com.liferay.mobile.android.v62.user.UserService;
-import com.rivetlogic.liferayrivet.screens.peopledirectorylist.PeopleDirectory;
-import com.rivetlogic.liferayrivet.screens.peopledirectorylist.PeopleDirectoryService;
 import com.rivetlogic.liferayrivet.util.SettingsUtil;
 
 import org.json.JSONObject;
@@ -14,24 +12,20 @@ import org.json.JSONObject;
  * Created by lorenz on 1/13/15.
  */
 
-public class UserTask extends AsyncTask<Void, String, PeopleDirectory> {
-    private PeopleDirectorySearchTaskCallback listener;
-    private String keywords;
-    private int start;
-    private int end;
+public class UserTask extends AsyncTask<Void, String, JSONObject> {
+    private UserTaskCallback listener;
     private Exception e;
 
-    public interface PeopleDirectorySearchTaskCallback {
+    public interface UserTaskCallback {
         public void onPreExecute();
-        public void onSuccess(PeopleDirectory dir);
+
+        public void onSuccess(JSONObject obj);
+
         public void onCancel(String error);
     }
 
-    public UserTask(PeopleDirectorySearchTaskCallback listener, String keywords, int start, int end) {
+    public UserTask(UserTaskCallback listener) {
         this.listener = listener;
-        this.keywords = keywords;
-        this.start = start;
-        this.end = end;
     }
 
     @Override
@@ -46,38 +40,29 @@ public class UserTask extends AsyncTask<Void, String, PeopleDirectory> {
     }
 
     @Override
-    protected PeopleDirectory doInBackground(Void... params) {
+    protected JSONObject doInBackground(Void... params) {
         Session session = SettingsUtil.getSession();
 
-
         UserService service = new UserService(session);
-
         try {
-            JSONObject json = service.getUserByEmailAddress(1234, SettingsUtil.getLogin());
-        } catch (Exception e1) {
-            e1.printStackTrace();
-        }
-
-        PeopleDirectoryService ser = new PeopleDirectoryService(session);
-        try {
-            JSONObject json = ser.search(keywords, start, end);
-            PeopleDirectory dir = new PeopleDirectory(json);
-            return dir;
+            JSONObject json = service.getUserByEmailAddress(SettingsUtil.getCompanyId(), SettingsUtil.getLogin());
+            return json;
         } catch (Exception e) {
             this.e = e;
             cancel(true);
         }
+
         return null;
     }
 
     @Override
-    public void onCancelled(PeopleDirectory dir) {
+    public void onCancelled(JSONObject obj) {
         listener.onCancel(e.getMessage());
     }
 
     @Override
-    public void onPostExecute(PeopleDirectory dir) {
-        listener.onSuccess(dir);
+    public void onPostExecute(JSONObject obj) {
+        listener.onSuccess(obj);
     }
 
 }

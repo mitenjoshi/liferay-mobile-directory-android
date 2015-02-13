@@ -12,6 +12,7 @@ public class SettingsUtil {
 	public static final String LOGIN = "login";
 	public static final String PASSWORD = "password";
 	public static final String SERVER = "server";
+    public static final String COMPANY_ID = "company_id";
 
     private static SharedPreferences _preferences;
 
@@ -37,8 +38,12 @@ public class SettingsUtil {
 	}
 	
 	public static String getServer() {
-		return _preferences.getString(SERVER, "http://mobilepeoplefinder.vm2.rivetlogic.com");
+		return _preferences.getString(SERVER, "");
 	}
+
+    public static int getCompanyId() {
+        return _preferences.getInt(COMPANY_ID, 10154);
+    }
 
     public static void setLogin(String login) {
         _preferences.edit().putString(LOGIN, login).apply();

@@ -1,18 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="CustomLoginTheme" >
-        <item name="lrScreenLoginLayoutBackground">@drawable/background_gradient</item>
+    <style name="CustomLoginTheme">
+        <item name="lrScreenLoginImageBackground">@drawable/background_gradient</item>
+        <item name="lrScreenLoginImageTop">@drawable/rl_logo_large</item>
         <item name="lrScreenLoginButtonTextColor">@color/white</item>
         <item name="lrScreenLoginButtonBackgroundColor">@color/rivet_orange</item>
+        <item name="lrScreenLoginUserDrawable">@drawable/ic_email_grey600_24dp</item>
+        <item name="lrScreenLoginPasswordDrawable">@drawable/ic_lock_grey600_24dp</item>
+        <!--   <item name="lrScreenLoginOption1Text">@string/no_account</item>
+           <item name="lrScreenLoginOption2Text">@string/forgot_password</item>-->
     </style>
 
-    <style name="CustomDetailTheme" >
+    <style name="CustomDetailTheme">
         <item name="lrScreenUserDetailIconColor">@color/rivet_orange</item>
     </style>
 
-    <style name="CustomListTheme" >
+    <style name="CustomListTheme">
         <item name="lrScreenUserListIconColor">@color/rivet_orange</item>
+    </style>
+
+    <style name="LRThemeUserDetailDefault">
+        <item name="lrScreenUserDetailIconColor">@color/alizarin</item>
+    </style>
+
+    <style name="LRThemeUserListDefault">
+        <item name="lrScreenUserListIconColor">@color/alizarin</item>
     </style>
 
 </resources>
