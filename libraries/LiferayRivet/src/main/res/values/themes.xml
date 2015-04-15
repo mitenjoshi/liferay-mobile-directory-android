@@ -2,30 +2,29 @@
 <resources>
 
     <style name="LRThemeLoginViewDefault">
-
         <item name="lrScreenLoginImageBackground">@color/lr_white</item>
         <item name="lrScreenLoginImageTop">@null</item>
         <item name="lrScreenLoginImageBottom">@null</item>
-
-        <item name="lrScreenLoginButtonText">@string/sign_in</item>
+        <item name="lrScreenLoginEditTextColor">@color/lr_gray</item>
+        <item name="lrScreenLoginEditTextHintColor">@color/lr_gray</item>
         <item name="lrScreenLoginButtonTextColor">@color/lr_white</item>
         <item name="lrScreenLoginButtonBackgroundColor">@color/lr_gray</item>
-
-        <item name="lrScreenLoginUserTextColor">@color/lr_gray</item>
+        <item name="lrScreenLoginButtonText">@string/lr_sign_in</item>
         <item name="lrScreenLoginUserTextHint">@string/lr_username</item>
-        <item name="lrScreenLoginUserTextHintColor">@color/lr_gray</item>
         <item name="lrScreenLoginUserDrawable">@null</item>
-
-        <item name="lrScreenLoginPasswordTextColor">@color/lr_gray</item>
         <item name="lrScreenLoginPasswordTextHint">@string/lr_password</item>
-        <item name="lrScreenLoginPasswordTextHintColor">@color/lr_gray</item>
         <item name="lrScreenLoginPasswordDrawable">@null</item>
-
         <item name="lrScreenLoginOptionsTextColor">@color/lr_gray</item>
         <item name="lrScreenLoginOption1Text">@null</item>
         <item name="lrScreenLoginOption2Text">@null</item>
-
     </style>
 
+    <style name="LRThemePasswordViewDefault" parent="@style/LRThemeLoginViewDefault">
+        <item name="lrScreenLoginButtonText">@string/lr_submit</item>
+        <item name="lrScreenLoginForgotPasswordEmailTextHint">@string/lr_email_address</item>
+        <item name="lrScreenLoginForgotPasswordEmailDrawable">@null</item>
+        <item name="lrScreenLoginOption1Text">@null</item>
+        <item name="lrScreenLoginOption2Text">@null</item>
+    </style>
 
 </resources>

@@ -1,9 +1,8 @@
 package com.rivetlogic.liferayrivet.screens.login;
 
 import android.app.Activity;
-
-import android.app.ProgressDialog;
 import android.content.res.TypedArray;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -12,15 +11,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.rivetlogic.liferayrivet.R;
 import com.rivetlogic.liferayrivet.component.ShapeRoundRectStroke;
+import com.rivetlogic.liferayrivet.component.StateListLoginOptionsBackground;
 import com.rivetlogic.liferayrivet.component.StateListRect;
 import com.rivetlogic.liferayrivet.util.SettingsUtil;
-import com.rivetlogic.liferayrivet.util.ToastUtil;
 
 import org.json.JSONObject;
 
@@ -53,22 +50,24 @@ public class LRLoginFragment extends Fragment {
     private int buttonTextColor;
     private int buttonBackgroundColor;
 
-    private int userTextColor;
+    private int editTextColor;
+    private int editTextHintColor;
+
     private String userTextHint;
-    private int userTextHintColor;
     private int userDrawable;
 
-    private int passwordTextColor;
     private String passwordTextHint;
-    private int passwordTextHintColor;
     private int passwordDrawable;
 
-    private int passwordForgotTextColor;
-
-    private ProgressDialog pd;
+    private int optionsColor;
 
     public interface LRLoginFragmentCallback {
-        public void onLoginSuccess();
+
+        public void onLoginPreExecute();
+
+        public void onLoginSuccess(JSONObject obj);
+
+        public void onLoginCancel(String error);
 
         public void onLoginOption1Clicked();
 
@@ -96,7 +95,6 @@ public class LRLoginFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         styleResId = R.style.LRThemeLoginViewDefault;
         setStyledAttributes();
         Bundle args = getArguments();
@@ -145,22 +143,23 @@ public class LRLoginFragment extends Fragment {
         password.setBackground(textDrawable);
 
         user.setHint(userTextHint);
-        user.setTextColor(userTextColor);
-        user.setHintTextColor(userTextHintColor);
+        user.setTextColor(editTextColor);
+        user.setHintTextColor(editTextHintColor);
         if(userDrawable > 0)
         user.setCompoundDrawablesWithIntrinsicBounds(getResources().getDrawable(userDrawable), null, null, null);
 
         password.setHint(passwordTextHint);
-        password.setTextColor(passwordTextColor);
-        password.setHintTextColor(passwordTextHintColor);
+        password.setTextColor(editTextColor);
+        password.setHintTextColor(editTextHintColor);
         if(passwordDrawable > 0)
         password.setCompoundDrawablesWithIntrinsicBounds(getResources().getDrawable(passwordDrawable), null, null, null);
 
-        optionDiv.setBackgroundColor(passwordForgotTextColor);
-        option1.setTextColor(passwordForgotTextColor);
-        option2.setTextColor(passwordForgotTextColor);
+        optionDiv.setBackgroundColor(optionsColor);
+        option1.setTextColor(optionsColor);
+        option2.setTextColor(optionsColor);
 
         option1.setText(option1Text);
+        option1.setBackground(new StateListLoginOptionsBackground(new ColorDrawable(optionsColor)));
         option1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -168,6 +167,7 @@ public class LRLoginFragment extends Fragment {
             }
         });
         option2.setText(option2Text);
+        option2.setBackground(new StateListLoginOptionsBackground(new ColorDrawable(optionsColor)));
         option2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -198,21 +198,20 @@ public class LRLoginFragment extends Fragment {
                     buttonText = src;
                 buttonBackgroundColor = a.getColor(R.styleable.LRLoginView_lrScreenLoginButtonBackgroundColor, buttonBackgroundColor);
 
-                userTextColor = a.getColor(R.styleable.LRLoginView_lrScreenLoginUserTextColor, userTextColor);
+                editTextColor = a.getColor(R.styleable.LRLoginView_lrScreenLoginEditTextColor, editTextColor);
+                editTextHintColor = a.getColor(R.styleable.LRLoginView_lrScreenLoginEditTextHintColor, editTextHintColor);
+
                 src = a.getString(R.styleable.LRLoginView_lrScreenLoginUserTextHint);
                 if (src != null)
                     userTextHint = src;
-                userTextHintColor = a.getColor(R.styleable.LRLoginView_lrScreenLoginUserTextHintColor, userTextHintColor);
                 userDrawable = a.getResourceId(R.styleable.LRLoginView_lrScreenLoginUserDrawable, 0);
 
-                passwordTextColor = a.getColor(R.styleable.LRLoginView_lrScreenLoginPasswordTextColor, passwordTextColor);
                 src = a.getString(R.styleable.LRLoginView_lrScreenLoginPasswordTextHint);
                 if (src != null)
                     passwordTextHint = src;
-                passwordTextHintColor = a.getColor(R.styleable.LRLoginView_lrScreenLoginPasswordTextHintColor, passwordTextHintColor);
                 passwordDrawable = a.getResourceId(R.styleable.LRLoginView_lrScreenLoginPasswordDrawable, 0);
 
-                passwordForgotTextColor = a.getColor(R.styleable.LRLoginView_lrScreenLoginOptionsTextColor, passwordForgotTextColor);
+                optionsColor = a.getColor(R.styleable.LRLoginView_lrScreenLoginOptionsTextColor, optionsColor);
                 option1Text = a.getString(R.styleable.LRLoginView_lrScreenLoginOption1Text);
                 option2Text = a.getString(R.styleable.LRLoginView_lrScreenLoginOption2Text);
 
@@ -231,7 +230,6 @@ public class LRLoginFragment extends Fragment {
     private void login() {
         SettingsUtil.setLogin(user.getText().toString());
         SettingsUtil.setPassword(password.getText().toString());
-
         UserTask userTask = new UserTask(callback);
         userTask.execute();
     }
@@ -239,24 +237,17 @@ public class LRLoginFragment extends Fragment {
     private UserTask.UserTaskCallback callback = new UserTask.UserTaskCallback() {
         @Override
         public void onPreExecute() {
-            pd = ProgressDialog.show(getActivity(), null, null);
-            pd.setMessage(getString(R.string.msg_signing_in));
+            listener.onLoginPreExecute();
         }
 
         @Override
         public void onSuccess(JSONObject obj) {
-            listener.onLoginSuccess();
-            if (pd != null && pd.isShowing()) {
-                pd.dismiss();
-            }
+            listener.onLoginSuccess(obj);
         }
 
         @Override
         public void onCancel(String error) {
-            if (pd != null && pd.isShowing()) {
-                pd.dismiss();
-            }
-            ToastUtil.show(getActivity(), error, false);
+            listener.onLoginCancel(error);
         }
     };
 

@@ -11,6 +11,7 @@ package com.rivetlogic.mobilepeopledirectory.activity;
 
 import android.app.Activity;
 import android.app.PendingIntent;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
@@ -26,18 +27,24 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.SearchView;
+import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
+import com.rivetlogic.liferayrivet.screens.forgotpassword.LRPasswordFragment;
 import com.rivetlogic.liferayrivet.screens.login.LRLoginFragment;
-import com.rivetlogic.mobilepeopledirectory.fragment.LRDirectoryDetailFragment;
-import com.rivetlogic.mobilepeopledirectory.fragment.PeopleDirectoryListFragment;
+import com.rivetlogic.liferayrivet.util.ToastUtil;
+import com.rivetlogic.mobilepeopledirectory.fragment.DirectoryDetailFragment;
+import com.rivetlogic.mobilepeopledirectory.fragment.DirectoryListFragment;
 import com.rivetlogic.mobilepeopledirectory.model.User;
 import com.rivetlogic.liferayrivet.util.SettingsUtil;
 import com.rivetlogic.mobilepeopledirectory.R;
+import com.rivetlogic.mobilepeopledirectory.utilities.Utilities;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -46,52 +53,81 @@ import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 
 
-public class MainActivity extends ActionBarActivity implements LRLoginFragment.LRLoginFragmentCallback, PeopleDirectoryListFragment.LRDirectoryListFragmentCallback {
+public class MainActivity extends ActionBarActivity implements
+        LRLoginFragment.LRLoginFragmentCallback,
+        LRPasswordFragment.LRPasswordFragmentCallback,
+        DirectoryListFragment.LRDirectoryListFragmentCallback {
 
     private static final String TAG_LOGIN_FRAGMENT = "com.rivetlogic.liferay.screens.login.LRLoginFragment";
+    private static final String TAG_PASSWORD_FRAGMENT = "com.rivetlogic.liferay.screens.login.LRForgotPasswordFragment";
     private static final String TAG_LIST_FRAGMENT = "com.rivetlogic.liferay.screens.login.LRDirectoryListFragment";
     private static final String TAG_DETAIL_FRAGMENT = "com.rivetlogic.liferay.screens.login.LRDirectoryDetailFragment";
-
     private static final int TAG_QR_RESULT = 1001;
-    private NfcAdapter mNfcAdapter;
     public static final String MIME_TEXT_PLAIN = "text/plain";
 
-    private Menu menu;
     private SearchView searchView;
+    private Toolbar toolbar;
+    private ProgressDialog pd;
+    private NfcAdapter mNfcAdapter;
+    private ImageView qrButton;
 
     @Override
     protected void onPause() {
-        if (mNfcAdapter != null)
-            stopForegroundDispatch(this, mNfcAdapter);
+        if (mNfcAdapter != null) {
+            // stopForegroundDispatch(this, mNfcAdapter);
+        }
         super.onPause();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        if (mNfcAdapter != null)
-            setupForegroundDispatch(this, mNfcAdapter);
+        if (mNfcAdapter != null) {
+            //  setupForegroundDispatch(this, mNfcAdapter);
+        }
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
         setTheme(R.style.MPDTheme);
         super.onCreate(savedInstanceState);
         Crashlytics.start(this);
-        setContentView(R.layout.activity_main);
-
-        getSupportFragmentManager().addOnBackStackChangedListener(mOnBackStackChangedListener);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-
         SettingsUtil.init(this);
-        SettingsUtil.setServer("https://mobilepeoplefinder.vm2.rivetlogic.com");
+        setContentView(R.layout.activity_main);
+        getSupportFragmentManager().addOnBackStackChangedListener(mOnBackStackChangedListener);
+
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.inflateMenu(R.menu.menu_main);
+        searchView = (SearchView) toolbar.getMenu().findItem(R.id.action_search).getActionView();
+        searchView.setOnQueryTextListener(searchListener);
+
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
+
+        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+                switch (menuItem.getItemId()) {
+                    case R.id.action_about:
+
+                        break;
+                    case R.id.action_logout:
+                        SettingsUtil.setPassword("");
+                        addLoginFragment();
+                        break;
+                }
+                return false;
+            }
+        });
 
         if (savedInstanceState == null) {
             if (SettingsUtil.getLogin() == null || SettingsUtil.getLogin().length() == 0 ||
@@ -104,11 +140,11 @@ public class MainActivity extends ActionBarActivity implements LRLoginFragment.L
             FragmentManager fm = getSupportFragmentManager();
             Fragment prev = fm.findFragmentByTag(TAG_LOGIN_FRAGMENT);
             if (prev != null)
-                getSupportActionBar().hide();
-
+                toolbar.setVisibility(View.GONE);
         }
 
-        mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
+        //   mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
+        //   qrButton = (ImageView) findViewById(R.id.main_container_qr_code_button);
     }
 
     public FragmentManager.OnBackStackChangedListener mOnBackStackChangedListener = new FragmentManager.OnBackStackChangedListener() {
@@ -116,50 +152,17 @@ public class MainActivity extends ActionBarActivity implements LRLoginFragment.L
         public void onBackStackChanged() {
             int backStackEntryCount = getSupportFragmentManager().getBackStackEntryCount();
             if (backStackEntryCount == 0) {
+                toolbar.getMenu().findItem(R.id.action_search).setVisible(true);
                 searchView.setVisibility(View.VISIBLE);
-                menu.findItem(R.id.action_search).setVisible(true);
-                getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+                toolbar.setNavigationIcon(null);
             } else {
-                menu.findItem(R.id.action_search).collapseActionView();
+                toolbar.getMenu().findItem(R.id.action_search).collapseActionView();
+                toolbar.getMenu().findItem(R.id.action_search).setVisible(false);
                 searchView.setVisibility(View.GONE);
-                menu.findItem(R.id.action_search).setVisible(false);
-                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+                toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
             }
         }
     };
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        this.menu = menu;
-        searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
-        searchView.setOnQueryTextListener(searchListener);
-
-        FragmentManager fm = getSupportFragmentManager();
-        Fragment prev = fm.findFragmentByTag(TAG_DETAIL_FRAGMENT);
-        if (prev != null) {
-            searchView.setVisibility(View.GONE);
-            menu.findItem(R.id.action_search).setVisible(false);
-        }
-
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                super.onBackPressed();
-                return true;
-            case R.id.action_settings:
-                return true;
-            case R.id.action_logout:
-                SettingsUtil.setPassword("");
-                addLoginFragment();
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
 
     SearchView.OnQueryTextListener searchListener = new SearchView.OnQueryTextListener() {
         @Override
@@ -170,7 +173,7 @@ public class MainActivity extends ActionBarActivity implements LRLoginFragment.L
         @Override
         public boolean onQueryTextChange(String s) {
             FragmentManager fm = getSupportFragmentManager();
-            PeopleDirectoryListFragment fragment = (PeopleDirectoryListFragment) fm.findFragmentByTag(TAG_LIST_FRAGMENT);
+            DirectoryListFragment fragment = (DirectoryListFragment) fm.findFragmentByTag(TAG_LIST_FRAGMENT);
             if (fragment != null)
                 fragment.filterList(s);
             return true;
@@ -178,19 +181,18 @@ public class MainActivity extends ActionBarActivity implements LRLoginFragment.L
     };
 
     public void addLoginFragment() {
+        toolbar.setVisibility(View.GONE);
         FragmentManager fm = getSupportFragmentManager();
         final FragmentTransaction ft = fm.beginTransaction();
         final Fragment prev = fm.findFragmentByTag(TAG_LOGIN_FRAGMENT);
         if (prev == null) {
-            getSupportActionBar().setShowHideAnimationEnabled(false);
-            getSupportActionBar().hide();
             fm.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
             LRLoginFragment loginFragment = LRLoginFragment.newInstance(R.style.CustomLoginTheme);
             ft.replace(R.id.main_container, loginFragment, TAG_LOGIN_FRAGMENT);
             ft.commit();
         }
 
-        ImageView qrButton = (ImageView) findViewById(R.id.main_container_qr_code_button);
+        if (qrButton == null) return;
         qrButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -208,20 +210,26 @@ public class MainActivity extends ActionBarActivity implements LRLoginFragment.L
         qrButton.setVisibility(View.VISIBLE);
     }
 
-    private LRLoginFragment getLoginFragment() {
+    public void addForgotPasswordFragment() {
         FragmentManager fm = getSupportFragmentManager();
-        final LRLoginFragment frag = (LRLoginFragment) fm.findFragmentByTag(TAG_LOGIN_FRAGMENT);
-
-        return frag;
+        final FragmentTransaction ft = fm.beginTransaction();
+        final Fragment prev = fm.findFragmentByTag(TAG_PASSWORD_FRAGMENT);
+        if (prev == null) {
+            ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+            LRPasswordFragment lrPasswordFragment = LRPasswordFragment.newInstance(R.style.CustomPasswordTheme);
+            ft.replace(R.id.main_container, lrPasswordFragment, TAG_PASSWORD_FRAGMENT);
+            ft.addToBackStack(TAG_PASSWORD_FRAGMENT);
+            ft.commit();
+        }
     }
 
     public void addDirectoryListFragment() {
+        toolbar.setVisibility(View.VISIBLE);
         FragmentManager fm = getSupportFragmentManager();
         final FragmentTransaction ft = fm.beginTransaction();
         final Fragment prev = fm.findFragmentByTag(TAG_LIST_FRAGMENT);
         if (prev == null) {
-            getSupportActionBar().show();
-            PeopleDirectoryListFragment listFragment = PeopleDirectoryListFragment.newInstance(R.style.CustomListTheme);
+            DirectoryListFragment listFragment = DirectoryListFragment.newInstance(R.style.CustomListTheme);
             if (getResources().getBoolean(R.bool.tablet_10)) {
                 ft.replace(R.id.list_container, listFragment, TAG_DETAIL_FRAGMENT);
                 final Fragment frag = fm.findFragmentByTag(TAG_LOGIN_FRAGMENT);
@@ -240,7 +248,7 @@ public class MainActivity extends ActionBarActivity implements LRLoginFragment.L
     public void addDirectoryDetailFragment(User user) {
         FragmentManager fm = getSupportFragmentManager();
         final FragmentTransaction ft = fm.beginTransaction();
-        LRDirectoryDetailFragment detailFragment = LRDirectoryDetailFragment.newInstance(R.style.CustomDetailTheme, user);
+        DirectoryDetailFragment detailFragment = DirectoryDetailFragment.newInstance(R.style.CustomDetailTheme, user);
         if (getResources().getBoolean(R.bool.tablet_10)) {
             ft.replace(R.id.detail_container, detailFragment, TAG_DETAIL_FRAGMENT);
         } else {
@@ -256,31 +264,55 @@ public class MainActivity extends ActionBarActivity implements LRLoginFragment.L
     }
 
     @Override
-    public void onLoginSuccess() {
+    public void onLoginSuccess(JSONObject obj) {
+        if (pd != null)
+            pd.dismiss();
         addDirectoryListFragment();
-        ((ImageView) findViewById(R.id.main_container_qr_code_button)).setVisibility(View.GONE);
+        findViewById(R.id.main_container_qr_code_button).setVisibility(View.GONE);
         if (mNfcAdapter != null) {
             stopForegroundDispatch(this, mNfcAdapter);
         }
     }
 
     @Override
-    public void onLoginOption1Clicked() {
+    public void onLoginPreExecute() {
+        pd = ProgressDialog.show(MainActivity.this, null, null);
+        pd.setMessage(getString(R.string.msg_signing_in));
+    }
 
+    @Override
+    public void onLoginCancel(String error) {
+        if (pd != null)
+            pd.dismiss();
+        Utilities.showTost(this, error, Toast.LENGTH_SHORT);
+    }
+
+    @Override
+    public void onLoginOption1Clicked() {
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://rivetlogic.com/"));
+        startActivity(browserIntent);
     }
 
     @Override
     public void onLoginOption2Clicked() {
-
+        addForgotPasswordFragment();
     }
 
+    @Override
+    public void onPasswordOption1Clicked() {
+        super.onBackPressed();
+    }
+
+    @Override
+    public void onPasswordOption2Clicked() {
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://rivetlogic.com/"));
+        startActivity(browserIntent);
+    }
 
     @Override
     public void onItemClicked(User user) {
         addDirectoryDetailFragment(user);
     }
-
-
 
     /**
      * @param activity The corresponding {@link Activity} requesting the foreground dispatch.
@@ -402,6 +434,13 @@ public class MainActivity extends ActionBarActivity implements LRLoginFragment.L
                 //handle cancel
             }
         }
+    }
+
+    private LRLoginFragment getLoginFragment() {
+        FragmentManager fm = getSupportFragmentManager();
+        final LRLoginFragment frag = (LRLoginFragment) fm.findFragmentByTag(TAG_LOGIN_FRAGMENT);
+
+        return frag;
     }
 
     private void autoLoginNDEF(String result) {

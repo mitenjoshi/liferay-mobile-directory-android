@@ -4,20 +4,28 @@
     <style name="CustomLoginTheme">
         <item name="lrScreenLoginImageBackground">@drawable/background_gradient</item>
         <item name="lrScreenLoginImageTop">@drawable/rl_logo_large</item>
+        <item name="lrScreenLoginImageBottom">@null</item>
         <item name="lrScreenLoginButtonTextColor">@color/white</item>
-        <item name="lrScreenLoginButtonBackgroundColor">@color/rivet_orange</item>
+        <item name="lrScreenLoginButtonBackgroundColor">@color/primary</item>
         <item name="lrScreenLoginUserDrawable">@drawable/ic_email_grey600_24dp</item>
         <item name="lrScreenLoginPasswordDrawable">@drawable/ic_lock_grey600_24dp</item>
-        <!--   <item name="lrScreenLoginOption1Text">@string/no_account</item>
-           <item name="lrScreenLoginOption2Text">@string/forgot_password</item>-->
+        <item name="lrScreenLoginOption1Text">@string/no_account</item>
+        <item name="lrScreenLoginOption2Text">@string/forgot_password</item>
+    </style>
+
+    <style name="CustomPasswordTheme" parent="@style/CustomLoginTheme">
+        <item name="lrScreenLoginButtonText">@string/reset_link</item>
+        <item name="lrScreenLoginForgotPasswordEmailTextHint">@string/email_address</item>
+        <item name="lrScreenLoginOption1Text">@string/sign_in_lc</item>
+        <item name="lrScreenLoginOption2Text">@string/no_account</item>
     </style>
 
     <style name="CustomDetailTheme">
-        <item name="lrScreenUserDetailIconColor">@color/rivet_orange</item>
+        <item name="lrScreenUserDetailIconColor">@color/primary</item>
     </style>
 
     <style name="CustomListTheme">
-        <item name="lrScreenUserListIconColor">@color/rivet_orange</item>
+        <item name="lrScreenUserListIconColor">@color/alizarin</item>
     </style>
 
     <style name="LRThemeUserDetailDefault">

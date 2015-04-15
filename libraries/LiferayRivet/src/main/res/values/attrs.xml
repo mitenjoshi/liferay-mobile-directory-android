@@ -7,19 +7,21 @@
         <attr name="lrScreenLoginImageTop" format="reference" />
         <attr name="lrScreenLoginImageBottom" format="reference" />
 
-        <attr name="lrScreenLoginButtonText" format="string" />
         <attr name="lrScreenLoginButtonTextColor" format="color" />
         <attr name="lrScreenLoginButtonBackgroundColor" format="color" />
+        <attr name="lrScreenLoginButtonText" format="string" />
 
-        <attr name="lrScreenLoginUserTextColor" format="color" />
+        <attr name="lrScreenLoginEditTextColor" format="integer" />
+        <attr name="lrScreenLoginEditTextHintColor" format="integer" />
+
         <attr name="lrScreenLoginUserTextHint" format="string" />
-        <attr name="lrScreenLoginUserTextHintColor" format="color" />
         <attr name="lrScreenLoginUserDrawable" format="reference" />
 
-        <attr name="lrScreenLoginPasswordTextColor" format="integer" />
         <attr name="lrScreenLoginPasswordTextHint" format="string" />
-        <attr name="lrScreenLoginPasswordTextHintColor" format="integer" />
         <attr name="lrScreenLoginPasswordDrawable" format="reference" />
+
+        <attr name="lrScreenLoginForgotPasswordEmailTextHint" format="string" />
+        <attr name="lrScreenLoginForgotPasswordEmailDrawable" format="reference" />
 
         <attr name="lrScreenLoginOptionsTextColor" format="color" />
         <attr name="lrScreenLoginOption1Text" format="string" />

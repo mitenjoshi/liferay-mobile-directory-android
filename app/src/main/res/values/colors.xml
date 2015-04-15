@@ -5,8 +5,9 @@
     <color name="black">#ff000000</color>
     <color name="transparent">#00000000</color>
 
-    <color name="rivet_orange">#fff58220</color>
-    <color name="rivet_grey">#ffA7A9AC</color>
+    <color name="primary">#fff58220</color>
+    <color name="primary_text">#ffffffff</color>
+    <color name="secondary">#ffA7A9AC</color>
 
     <color name="black_95">#ff0d0d0d</color>
     <color name="black_90">#ff191919</color>

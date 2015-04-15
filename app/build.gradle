@@ -14,7 +14,6 @@ repositories {
     maven { url 'http://download.crashlytics.com/maven' }
 }
 
-
 android {
     compileSdkVersion 21
     buildToolsVersion "21.1.2"

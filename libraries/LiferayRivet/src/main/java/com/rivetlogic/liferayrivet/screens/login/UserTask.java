@@ -42,7 +42,6 @@ public class UserTask extends AsyncTask<Void, String, JSONObject> {
     @Override
     protected JSONObject doInBackground(Void... params) {
         Session session = SettingsUtil.getSession();
-
         UserService service = new UserService(session);
         try {
             JSONObject json = service.getUserByEmailAddress(SettingsUtil.getCompanyId(), SettingsUtil.getLogin());

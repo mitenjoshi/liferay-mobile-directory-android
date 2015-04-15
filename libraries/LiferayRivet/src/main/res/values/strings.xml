@@ -3,8 +3,12 @@
 
     <string name="lr_username">Username</string>
     <string name="lr_password">Password</string>
-    <string name="sign_in">SIGN IN</string>
+    <string name="lr_email_address">Email Address</string>
+    <string name="lr_sign_in">SIGN IN</string>
+    <string name="lr_submit">SUBMIT</string>
+    <string name="lr_send_email_error" formatted = "false">No user was found with the email address %s</string>
+    <string name="lr_password_sent" formatted = "false">Password reset instructions have been sent to %s</string>
 
-    <string name="msg_signing_in">Signing In</string>
+    <string name="lr_email_error">Please enter a valid email address</string>
 
 </resources>
