@@ -16,6 +16,7 @@
         android:src="@drawable/ic_call_grey600_36dp" />-->
 
     <TextView
+        android:id="@+id/toolbar_title"
         android:textColor="@color/primary_text"
         android:textSize="18dp"
         android:paddingRight="16dp"

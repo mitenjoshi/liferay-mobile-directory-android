@@ -56,7 +56,7 @@ import java.util.Arrays;
 public class MainActivity extends ActionBarActivity implements
         LRLoginFragment.LRLoginFragmentCallback,
         LRPasswordFragment.LRPasswordFragmentCallback,
-        DirectoryListFragment.LRDirectoryListFragmentCallback {
+        DirectoryListFragment.DirectoryListFragmentCallback, DirectoryDetailFragment.DirectoryDetailFragmentCallback {
 
     private static final String TAG_LOGIN_FRAGMENT = "com.rivetlogic.liferay.screens.login.LRLoginFragment";
     private static final String TAG_PASSWORD_FRAGMENT = "com.rivetlogic.liferay.screens.login.LRForgotPasswordFragment";
@@ -65,8 +65,7 @@ public class MainActivity extends ActionBarActivity implements
     private static final int TAG_QR_RESULT = 1001;
     public static final String MIME_TEXT_PLAIN = "text/plain";
 
-    private SearchView searchView;
-    private Toolbar toolbar;
+
     private ProgressDialog pd;
     private NfcAdapter mNfcAdapter;
     private ImageView qrButton;
@@ -101,34 +100,6 @@ public class MainActivity extends ActionBarActivity implements
         setContentView(R.layout.activity_main);
         getSupportFragmentManager().addOnBackStackChangedListener(mOnBackStackChangedListener);
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.inflateMenu(R.menu.menu_main);
-        searchView = (SearchView) toolbar.getMenu().findItem(R.id.action_search).getActionView();
-        searchView.setOnQueryTextListener(searchListener);
-
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
-
-        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem menuItem) {
-                switch (menuItem.getItemId()) {
-                    case R.id.action_about:
-
-                        break;
-                    case R.id.action_logout:
-                        SettingsUtil.setPassword("");
-                        addLoginFragment();
-                        break;
-                }
-                return false;
-            }
-        });
-
         if (savedInstanceState == null) {
             if (SettingsUtil.getLogin() == null || SettingsUtil.getLogin().length() == 0 ||
                     SettingsUtil.getPassword() == null || SettingsUtil.getPassword().length() == 0) {
@@ -136,11 +107,6 @@ public class MainActivity extends ActionBarActivity implements
             } else {
                 addDirectoryListFragment();
             }
-        } else {
-            FragmentManager fm = getSupportFragmentManager();
-            Fragment prev = fm.findFragmentByTag(TAG_LOGIN_FRAGMENT);
-            if (prev != null)
-                toolbar.setVisibility(View.GONE);
         }
 
         //   mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
@@ -152,36 +118,15 @@ public class MainActivity extends ActionBarActivity implements
         public void onBackStackChanged() {
             int backStackEntryCount = getSupportFragmentManager().getBackStackEntryCount();
             if (backStackEntryCount == 0) {
-                toolbar.getMenu().findItem(R.id.action_search).setVisible(true);
-                searchView.setVisibility(View.VISIBLE);
-                toolbar.setNavigationIcon(null);
+
             } else {
-                toolbar.getMenu().findItem(R.id.action_search).collapseActionView();
-                toolbar.getMenu().findItem(R.id.action_search).setVisible(false);
-                searchView.setVisibility(View.GONE);
-                toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
+
             }
         }
     };
 
-    SearchView.OnQueryTextListener searchListener = new SearchView.OnQueryTextListener() {
-        @Override
-        public boolean onQueryTextSubmit(String s) {
-            return false;
-        }
-
-        @Override
-        public boolean onQueryTextChange(String s) {
-            FragmentManager fm = getSupportFragmentManager();
-            DirectoryListFragment fragment = (DirectoryListFragment) fm.findFragmentByTag(TAG_LIST_FRAGMENT);
-            if (fragment != null)
-                fragment.filterList(s);
-            return true;
-        }
-    };
-
     public void addLoginFragment() {
-        toolbar.setVisibility(View.GONE);
+
         FragmentManager fm = getSupportFragmentManager();
         final FragmentTransaction ft = fm.beginTransaction();
         final Fragment prev = fm.findFragmentByTag(TAG_LOGIN_FRAGMENT);
@@ -224,7 +169,6 @@ public class MainActivity extends ActionBarActivity implements
     }
 
     public void addDirectoryListFragment() {
-        toolbar.setVisibility(View.VISIBLE);
         FragmentManager fm = getSupportFragmentManager();
         final FragmentTransaction ft = fm.beginTransaction();
         final Fragment prev = fm.findFragmentByTag(TAG_LIST_FRAGMENT);
@@ -312,6 +256,12 @@ public class MainActivity extends ActionBarActivity implements
     @Override
     public void onItemClicked(User user) {
         addDirectoryDetailFragment(user);
+    }
+
+    @Override
+    public void logout() {
+        SettingsUtil.setPassword("");
+        addLoginFragment();
     }
 
     /**

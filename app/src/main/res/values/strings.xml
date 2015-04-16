@@ -5,6 +5,10 @@
 
     <string name="action_about">About</string>
     <string name="action_logout">Logout</string>
+    <string name="action_favorites">Favorites</string>
+
+    <string name="user_added_favorites">Added to favorites</string>
+    <string name="user_removed_favorites">Removed from favorites</string>
 
     <string name="forgot_password">Forgot password</string>
     <string name="no_account">No Account?</string>

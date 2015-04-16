@@ -5,21 +5,29 @@
 
     <item
         android:id="@+id/action_search"
+        android:orderInCategory="1"
         android:title="@string/abc_searchview_description_clear"
         android:icon="@drawable/abc_ic_search_api_mtrl_alpha"
         app:showAsAction="collapseActionView|ifRoom"
         app:actionViewClass="android.support.v7.widget.SearchView"/>
 
     <item
+        android:id="@+id/action_favorites"
+        android:title="@string/action_favorites"
+        android:orderInCategory="100"
+        android:icon="@drawable/ic_star_white_24dp"
+        app:showAsAction="always" />
+
+    <item
         android:id="@+id/action_about"
         android:title="@string/action_about"
-        android:orderInCategory="100"
+        android:orderInCategory="200"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/action_logout"
         android:title="@string/action_logout"
-        android:orderInCategory="200"
+        android:orderInCategory="300"
         app:showAsAction="never" />
 
 </menu>

@@ -1,6 +1,7 @@
 package com.rivetlogic.mobilepeopledirectory.fragment;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -17,15 +18,22 @@ import android.renderscript.Element;
 import android.renderscript.RenderScript;
 import android.renderscript.ScriptIntrinsicBlur;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.SearchView;
+import android.support.v7.widget.Toolbar;
 import android.telephony.TelephonyManager;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.rivetlogic.mobilepeopledirectory.R;
+import com.rivetlogic.mobilepeopledirectory.data.DataAccess;
+import com.rivetlogic.mobilepeopledirectory.data.IDataAccess;
+import com.rivetlogic.mobilepeopledirectory.utilities.Utilities;
 import com.rivetlogic.mobilepeopledirectory.view.CircularImageView;
 import com.rivetlogic.liferayrivet.util.SettingsUtil;
 import com.rivetlogic.mobilepeopledirectory.model.User;
@@ -40,13 +48,18 @@ public class DirectoryDetailFragment extends Fragment {
     private static final String KEY_STYLE_ID = "com.rivetlogic.liferay.screens.login.LRDirectoryDetailFragment_styleResId";
     private static final String KEY_USER = "com.rivetlogic.liferay.screens.login.LRDirectoryDetailFragment_user";
 
+    private DirectoryDetailFragmentCallback listener;
     private int styleResId;
     private User user;
+    private IDataAccess da;
     private CircularImageView imageView;
     private ImageView frame;
-
     private int iconColor;
+    private Toolbar toolbar;
 
+    public interface DirectoryDetailFragmentCallback {
+        void logout();
+    }
 
     public static DirectoryDetailFragment newInstance(int styleResId, User user) {
         DirectoryDetailFragment fragment = new DirectoryDetailFragment();
@@ -67,6 +80,12 @@ public class DirectoryDetailFragment extends Fragment {
     }
 
     @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        this.listener = (DirectoryDetailFragmentCallback) activity;
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -75,6 +94,7 @@ public class DirectoryDetailFragment extends Fragment {
             user = (User) args.getSerializable(KEY_USER);
         }
 
+        da = DataAccess.getInstance(getActivity());
         styleResId = R.style.LRThemeUserDetailDefault;
         setStyledAttributes();
         if (args != null && args.containsKey(KEY_STYLE_ID)) {
@@ -89,6 +109,31 @@ public class DirectoryDetailFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_directory_detail, null);
 
+        toolbar = (Toolbar) v.findViewById(R.id.toolbar);
+        toolbar.inflateMenu(R.menu.menu_detail);
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getActivity().onBackPressed();
+            }
+        });
+        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+                switch (menuItem.getItemId()) {
+                    case R.id.action_about:
+
+                        break;
+                    case R.id.action_logout:
+                        listener.logout();
+                        break;
+
+                }
+                return false;
+            }
+        });
+
         imageView = (CircularImageView)v.findViewById(R.id.fragment_directory_detail_image);
         frame = (ImageView) v.findViewById(R.id.fragment_directory_detail_image_background);
 
@@ -97,6 +142,19 @@ public class DirectoryDetailFragment extends Fragment {
                 .error(R.drawable.ic_list_image_default)
                 .resizeDimen(R.dimen.detail_image_size, R.dimen.detail_image_size)
                 .into(target);
+
+        final FloatingActionButton button = (FloatingActionButton) v.findViewById(R.id.fab);
+        button.setIcon(user.favorite ? R.drawable.ic_star_white_36dp : R.drawable.ic_star_outline_white_36dp);
+        button.setStrokeVisible(false);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                user.favorite = !user.favorite;
+                da.updateUser(user);
+                button.setIcon(user.favorite ? R.drawable.ic_star_white_36dp : R.drawable.ic_star_outline_white_36dp);
+                Utilities.showTost(getActivity(), user.favorite ? R.string.user_added_favorites : R.string.user_removed_favorites);
+            }
+        });
 
         TextView name = (TextView) v.findViewById(R.id.fragment_directory_detail_name);
         name.setText(user.fullName);

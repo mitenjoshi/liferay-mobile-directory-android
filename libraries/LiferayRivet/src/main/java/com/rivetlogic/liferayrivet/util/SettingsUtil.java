@@ -17,7 +17,7 @@ public class SettingsUtil {
 
     private static SharedPreferences _preferences;
 
-    public static void init(Context context) {//10154
+    public static void init(Context context) {
         if(_preferences == null)
             _preferences = PreferenceManager.getDefaultSharedPreferences(context);
     }

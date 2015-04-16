@@ -22,6 +22,7 @@ public class DataAccess implements IDataAccess {
         userTable = new UserTable(context);
 
         if(getCount() == 0 || getServer().equals("") || getCompanyId() == 0) {
+            SettingsUtil.init(context);
             setServer("https://mobilepeoplefinder.vm2.rivetlogic.com");
             setCompanyId(10154);
         }
@@ -29,7 +30,7 @@ public class DataAccess implements IDataAccess {
 
     public synchronized static IDataAccess getInstance(Context context) {
         if (instance == null) {
-            instance = new DataAccess(context);
+            instance = new DataAccess(context.getApplicationContext());
         }
         return instance;
     }

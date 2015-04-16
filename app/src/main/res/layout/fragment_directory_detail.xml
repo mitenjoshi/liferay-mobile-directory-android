@@ -4,81 +4,99 @@
     android:orientation="vertical"
     android:background="@color/black_05"
     android:layout_width="match_parent"
-    android:weightSum="1"
     android:layout_height="match_parent">
+
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/toolbar" />
 
     <FrameLayout
         android:id="@+id/fragment_directory_detail_image_container"
         android:layout_width="match_parent"
-        android:layout_weight=".35"
-        android:layout_height="0dp">
+        android:layout_height="wrap_content">
 
-        <ImageView
-            android:id="@+id/fragment_directory_detail_image_background"
+        <FrameLayout
             android:layout_width="match_parent"
-            android:adjustViewBounds="true"
-            android:scaleType="centerCrop"
-            android:layout_height="match_parent" />
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="42dp">
 
-        <com.rivetlogic.mobilepeopledirectory.view.CircularImageView
-            android:id="@+id/fragment_directory_detail_image"
+            <ImageView
+                android:id="@+id/fragment_directory_detail_image_background"
+                android:layout_width="match_parent"
+                android:adjustViewBounds="true"
+                android:scaleType="centerCrop"
+                android:layout_height="@dimen/background_image_size" />
+
+            <com.rivetlogic.mobilepeopledirectory.view.CircularImageView
+                android:id="@+id/fragment_directory_detail_image"
+                android:layout_width="@dimen/detail_image_size"
+                app:border_width="2dp"
+                android:layout_gravity="center"
+                app:border_color="@color/white"
+                android:layout_height="@dimen/detail_image_size" />
+
+        </FrameLayout>
+
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab"
             android:layout_width="wrap_content"
-            app:border_width="2dp"
-            app:border_color="@color/white"
-            android:layout_gravity="center"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|right"
+            app:fab_icon="@drawable/ic_star_white_36dp"
+            app:fab_colorNormal="@color/primary"
+            app:fab_colorPressed="@color/black_30" />
+
     </FrameLayout>
+
+    <TextView
+        android:id="@+id/fragment_directory_detail_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="26dp"
+        android:fontFamily="sans-serif-light"
+        android:layout_marginLeft="72dp"
+        android:textColor="@color/black_70" />
+
+    <TextView
+        android:id="@+id/fragment_directory_detail_screen_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="72dp"
+        android:textColor="@color/black_40"
+        android:textSize="18dp" />
+
 
     <LinearLayout
         android:layout_width="match_parent"
         android:orientation="vertical"
-        android:layout_weight=".65"
-        android:gravity="center"
-        android:layout_height="0dp">
-
-        <TextView
-            android:id="@+id/fragment_directory_detail_name"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:includeFontPadding="false"
-            android:textSize="29dp"
-            android:fontFamily="sans-serif-light"
-            android:gravity="center"
-            android:textColor="@color/black_70" />
-
-        <TextView
-            android:id="@+id/fragment_directory_detail_screen_name"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:includeFontPadding="false"
-            android:gravity="center"
-            android:layout_marginBottom="15dp"
-            android:textColor="@color/black_40"
-            android:textSize="18dp" />
+        android:gravity="center_vertical"
+        android:layout_height="match_parent">
 
         <RelativeLayout
             android:id="@+id/fragment_directory_detail_skype_button"
             android:background="@drawable/background_detail_fragment_button"
+            android:paddingTop="12dp"
+            android:paddingBottom="12dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
             <ImageView
                 android:id="@+id/fragment_directory_detail_skype_icon"
-                android:padding="20dp"
+                android:layout_marginLeft="16dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
                 android:src="@drawable/ic_skype_24dp" />
 
             <LinearLayout
-                android:layout_toRightOf="@id/fragment_directory_detail_skype_icon"
-                android:id="@+id/fragment_directory_detail_skype_info"
                 android:orientation="vertical"
+                android:layout_marginLeft="72dp"
                 android:layout_centerVertical="true"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
 
                 <TextView
-                    android:textColor="@color/black_80"
+                    android:textColor="@color/black_70"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="16dp"
@@ -92,39 +110,39 @@
                     android:textColor="@color/black_40" />
 
             </LinearLayout>
-
-            <View
-                style="@style/HorizontalDivider"
-                android:layout_alignLeft="@id/fragment_directory_detail_skype_info"
-                android:layout_alignParentTop="true"
-                android:layout_marginRight="24dp" />
         </RelativeLayout>
 
+        <View
+            android:background="@color/black_15"
+            android:layout_height="1dp"
+            android:layout_width="match_parent"
+            android:layout_marginLeft="72dp" />
 
         <RelativeLayout
             android:id="@+id/fragment_directory_detail_email_button"
-            android:layout_above="@+id/fragment_directory_detail_phone_button"
             android:background="@drawable/background_detail_fragment_button"
+            android:paddingTop="12dp"
+            android:paddingBottom="12dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
             <ImageView
                 android:id="@+id/fragment_directory_detail_email_icon"
-                android:padding="20dp"
+                android:layout_marginLeft="16dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
                 android:src="@drawable/ic_email_grey600_24dp" />
 
             <LinearLayout
-                android:layout_toRightOf="@id/fragment_directory_detail_email_icon"
-                android:id="@+id/fragment_directory_detail_email_info"
                 android:orientation="vertical"
+                android:layout_marginLeft="72dp"
                 android:layout_centerVertical="true"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
 
                 <TextView
-                    android:textColor="@color/black_80"
+                    android:textColor="@color/black_70"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="16dp"
@@ -138,39 +156,39 @@
                     android:textColor="@color/black_40" />
 
             </LinearLayout>
-
-            <View
-                style="@style/HorizontalDivider"
-                android:layout_alignLeft="@id/fragment_directory_detail_email_info"
-                android:layout_alignParentTop="true"
-                android:layout_marginRight="24dp" />
         </RelativeLayout>
 
+        <View
+            android:background="@color/black_10"
+            android:layout_height="1dp"
+            android:layout_width="match_parent"
+            android:layout_marginLeft="72dp" />
 
         <RelativeLayout
             android:id="@+id/fragment_directory_detail_phone_button"
             android:background="@drawable/background_detail_fragment_button"
-            android:layout_alignParentBottom="true"
+            android:paddingTop="12dp"
+            android:paddingBottom="12dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
             <ImageView
                 android:id="@+id/fragment_directory_detail_phone_icon"
-                android:padding="20dp"
+                android:layout_marginLeft="16dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
                 android:src="@drawable/ic_call_grey600_24dp" />
 
             <LinearLayout
-                android:layout_toRightOf="@id/fragment_directory_detail_phone_icon"
-                android:id="@+id/fragment_directory_detail_phone_info"
                 android:orientation="vertical"
+                android:layout_marginLeft="72dp"
                 android:layout_centerVertical="true"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
 
                 <TextView
-                    android:textColor="@color/black_80"
+                    android:textColor="@color/black_70"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="16dp"
@@ -184,21 +202,7 @@
                     android:textColor="@color/black_40" />
 
             </LinearLayout>
-
-            <View
-                style="@style/HorizontalDivider"
-                android:layout_alignLeft="@id/fragment_directory_detail_phone_info"
-                android:layout_alignParentTop="true"
-                android:layout_marginRight="24dp" />
-
-            <View
-                style="@style/HorizontalDivider"
-                android:layout_toRightOf="@id/fragment_directory_detail_phone_icon"
-                android:layout_alignBottom="@id/fragment_directory_detail_phone_icon"
-                android:layout_marginRight="24dp" />
-
         </RelativeLayout>
-
 
     </LinearLayout>
 </LinearLayout>

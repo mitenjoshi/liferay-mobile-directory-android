@@ -37,10 +37,5 @@
         <item name="colorSwitchThumbNormal">@color/emerald</item>
     </style>
 
-    <style name="HorizontalDivider">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">.75dp</item>
-        <item name="android:background">@color/black_15</item>
-    </style>
 
 </resources>

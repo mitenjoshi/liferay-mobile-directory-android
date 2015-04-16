@@ -30,6 +30,7 @@ public class UserTable extends Database {
     private static final String KEY_SKYPE_NAME = "col_skypeName";
     private static final String KEY_JOB_TITLE = "col_jobTitle";
     private static final String KEY_CITY = "col_city";
+    private static final String KEY_FAVORITE = "col_fav";
 
     private TableRow[] tableDef = {
             new TableRow(1, KEY_USER_ID, TableRow.DbType.INTEGER_PRIMARY_KEY, TableRow.Nullable.FALSE),
@@ -43,6 +44,7 @@ public class UserTable extends Database {
             new TableRow(1, KEY_SKYPE_NAME, TableRow.DbType.TEXT, TableRow.Nullable.FALSE),
             new TableRow(1, KEY_JOB_TITLE, TableRow.DbType.TEXT, TableRow.Nullable.FALSE),
             new TableRow(1, KEY_CITY, TableRow.DbType.TEXT, TableRow.Nullable.FALSE),
+            new TableRow(1, KEY_FAVORITE, TableRow.DbType.INT, TableRow.Nullable.FALSE)
     };
 
     public UserTable(Context context) {
@@ -84,6 +86,7 @@ public class UserTable extends Database {
             values.put(KEY_SKYPE_NAME, user.skypeName);
             values.put(KEY_JOB_TITLE, user.jobTitle);
             values.put(KEY_CITY, user.city);
+            values.put(KEY_FAVORITE, user.favorite);
 
             mDatabase.insertWithOnConflict(TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
         } catch (Exception e) {
@@ -110,6 +113,7 @@ public class UserTable extends Database {
                 user.skypeName= mCursor.getString(mCursor.getColumnIndex(KEY_SKYPE_NAME));
                 user.jobTitle= mCursor.getString(mCursor.getColumnIndex(KEY_JOB_TITLE));
                 user.city= mCursor.getString(mCursor.getColumnIndex(KEY_CITY));
+                user.favorite= mCursor.getInt(mCursor.getColumnIndex(KEY_FAVORITE)) == 1;
 
                 users.add(user);
             }

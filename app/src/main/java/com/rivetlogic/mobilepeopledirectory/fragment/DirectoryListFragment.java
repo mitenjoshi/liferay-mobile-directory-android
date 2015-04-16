@@ -7,7 +7,10 @@ import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.SearchView;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -32,15 +35,19 @@ public class DirectoryListFragment extends Fragment {
     private int styleResId;
     private ListView lv;
     private PeopleDirectoryListAdapter adapter;
-    private LRDirectoryListFragmentCallback listener;
+    private DirectoryListFragmentCallback listener;
     private IDataAccess da;
     private ProgressDialog pd;
     private ArrayList<User> users;
     private SwipeRefreshLayout swipeLayout;
     private int iconColor;
+    private SearchView searchView;
+    private Toolbar toolbar;
 
-    public interface LRDirectoryListFragmentCallback {
-        public void onItemClicked(User user);
+    public interface DirectoryListFragmentCallback {
+        void onItemClicked(User user);
+
+        void logout();
     }
 
     public static DirectoryListFragment newInstance() {
@@ -63,7 +70,7 @@ public class DirectoryListFragment extends Fragment {
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        this.listener = (LRDirectoryListFragmentCallback) activity;
+        this.listener = (DirectoryListFragmentCallback) activity;
     }
 
     @Override
@@ -85,8 +92,30 @@ public class DirectoryListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_directory_list, null);
 
+        toolbar = (Toolbar) v.findViewById(R.id.toolbar);
+        toolbar.inflateMenu(R.menu.menu_list);
+        searchView = (SearchView) toolbar.getMenu().findItem(R.id.action_search).getActionView();
+        searchView.setOnQueryTextListener(searchListener);
+        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+                switch (menuItem.getItemId()) {
+                    case R.id.action_about:
+
+                        break;
+                    case R.id.action_logout:
+                        listener.logout();
+                        break;
+                    case R.id.action_favorites:
+
+                        break;
+                }
+                return false;
+            }
+        });
+
         lv = (ListView) v.findViewById(R.id.fragment_directory_listview);
-        adapter = new PeopleDirectoryListAdapter(getActivity(), iconColor);
+        adapter = new PeopleDirectoryListAdapter(getActivity());
         lv.setAdapter(adapter);
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -111,13 +140,26 @@ public class DirectoryListFragment extends Fragment {
         return v;
     }
 
+    SearchView.OnQueryTextListener searchListener = new SearchView.OnQueryTextListener() {
+        @Override
+        public boolean onQueryTextSubmit(String s) {
+            return false;
+        }
+
+        @Override
+        public boolean onQueryTextChange(String s) {
+            filterList(s);
+            return true;
+        }
+    };
+
     @Override
     public void onResume() {
         super.onResume();
         if (users == null)
             updateUserList();
         else
-            adapter.updateAdapter(users);
+            updateAdapter(users);
     }
 
     private void setStyledAttributes() {
@@ -150,7 +192,7 @@ public class DirectoryListFragment extends Fragment {
             public void onSuccess(int count) {
                 if (count > 0 || users == null) {
                     users = da.getUsers();
-                    adapter.updateAdapter(users);
+                    updateAdapter(users);
                 }
                 try {
                     if (pd != null && pd.isShowing())
@@ -181,5 +223,13 @@ public class DirectoryListFragment extends Fragment {
 
         updateTask.execute();
     }
+
+    private void updateAdapter(ArrayList<User> users) {
+
+
+
+        adapter.updateAdapter(users);
+    }
+
 
 }

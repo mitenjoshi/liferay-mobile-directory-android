@@ -49,6 +49,7 @@ public class User implements Serializable {
     public String skypeName;
     public String jobTitle;
     public String city;
+    public boolean favorite;
 
     public User() {
 
@@ -66,6 +67,7 @@ public class User implements Serializable {
         skypeName = json.getString(SKYPE_NAME);
         jobTitle = json.getString(JOB_TITLE);
         city = json.getString(CITY);
+        favorite = false;
     }
 
 }

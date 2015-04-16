@@ -27,23 +27,12 @@ public class PeopleDirectoryListAdapter extends BaseAdapter implements Filterabl
 
     private Context context;
     private ArrayList<User> users;
-
     private ArrayList<User> filteredUsers;
-
-    private int iconColor;
-
     private int selectedItem;
-
     private boolean isTablet;
 
     public PeopleDirectoryListAdapter(Context context) {
         this.context = context;
-        this.iconColor = Color.GRAY;
-    }
-
-    public PeopleDirectoryListAdapter(Context context, int iconColor) {
-        this.context = context;
-        this.iconColor = iconColor;
         this.isTablet = context.getResources().getBoolean(R.bool.tablet_10);
     }
 
@@ -93,11 +82,11 @@ public class PeopleDirectoryListAdapter extends BaseAdapter implements Filterabl
             holder.skypeIcon = (ImageView) convertView.findViewById(R.id.list_row_directory_icon_skype);
             holder.phoneIcon = (ImageView) convertView.findViewById(R.id.list_row_directory_icon_phone);
             holder.emailIcon = (ImageView) convertView.findViewById(R.id.list_row_directory_icon_email);
-
             holder.pointer = (ImageView) convertView.findViewById(R.id.list_row_directory_pointer);
+            holder.fav = (ImageView) convertView.findViewById(R.id.list_row_directory_icon_fav);
 
-            holder.emailIcon.setColorFilter(iconColor, PorterDuff.Mode.SRC_ATOP);
-            holder.phoneIcon.setColorFilter(iconColor, PorterDuff.Mode.SRC_ATOP);
+        //    holder.emailIcon.setColorFilter(iconColor, PorterDuff.Mode.SRC_ATOP);
+         //   holder.phoneIcon.setColorFilter(iconColor, PorterDuff.Mode.SRC_ATOP);
 
             convertView.setTag(holder);
         } else {
@@ -121,8 +110,7 @@ public class PeopleDirectoryListAdapter extends BaseAdapter implements Filterabl
         if (isTablet && holder.pointer != null)
             holder.pointer.setVisibility(selectedItem == position ? View.VISIBLE : View.GONE);
 
-        holder.emailIcon.setColorFilter(iconColor, PorterDuff.Mode.SRC_ATOP);
-        holder.phoneIcon.setColorFilter(iconColor, PorterDuff.Mode.SRC_ATOP);
+        holder.fav.setVisibility(user.favorite ? View.VISIBLE : View.INVISIBLE);
 
         return convertView;
     }
@@ -135,6 +123,7 @@ public class PeopleDirectoryListAdapter extends BaseAdapter implements Filterabl
         public ImageView phoneIcon;
         public ImageView emailIcon;
         public ImageView pointer;
+        public ImageView fav;
     }
 
     @Override
