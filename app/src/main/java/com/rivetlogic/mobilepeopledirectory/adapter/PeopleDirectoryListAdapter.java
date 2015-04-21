@@ -1,8 +1,8 @@
 package com.rivetlogic.mobilepeopledirectory.adapter;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,10 +30,12 @@ public class PeopleDirectoryListAdapter extends BaseAdapter implements Filterabl
     private ArrayList<User> filteredUsers;
     private int selectedItem;
     private boolean isTablet;
+    private int primaryColor;
 
     public PeopleDirectoryListAdapter(Context context) {
         this.context = context;
         this.isTablet = context.getResources().getBoolean(R.bool.tablet_10);
+        this.primaryColor = context.getResources().getColor(R.color.primary);
     }
 
     public void updateAdapter(ArrayList<User> users) {
@@ -74,7 +76,7 @@ public class PeopleDirectoryListAdapter extends BaseAdapter implements Filterabl
         if (convertView == null) {
             holder = new ViewHolder();
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = inflater.inflate(R.layout.list_row_directory, null);
+            convertView = inflater.inflate(R.layout.list_row, null);
 
             holder.image = (ImageView) convertView.findViewById(R.id.list_row_directory_image);
             holder.name = (TextView) convertView.findViewById(R.id.list_row_directory_name);
@@ -83,10 +85,6 @@ public class PeopleDirectoryListAdapter extends BaseAdapter implements Filterabl
             holder.phoneIcon = (ImageView) convertView.findViewById(R.id.list_row_directory_icon_phone);
             holder.emailIcon = (ImageView) convertView.findViewById(R.id.list_row_directory_icon_email);
             holder.pointer = (ImageView) convertView.findViewById(R.id.list_row_directory_pointer);
-            holder.fav = (ImageView) convertView.findViewById(R.id.list_row_directory_icon_fav);
-
-        //    holder.emailIcon.setColorFilter(iconColor, PorterDuff.Mode.SRC_ATOP);
-         //   holder.phoneIcon.setColorFilter(iconColor, PorterDuff.Mode.SRC_ATOP);
 
             convertView.setTag(holder);
         } else {
@@ -102,6 +100,16 @@ public class PeopleDirectoryListAdapter extends BaseAdapter implements Filterabl
                 .into(holder.image);
 
         holder.name.setText(user.fullName);
+        if (user.favorite) {
+            holder.name.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_star_white_18dp, 0);
+            Drawable[] drawables = holder.name.getCompoundDrawables();
+            if (drawables[2] != null)
+                drawables[2].setColorFilter(primaryColor, PorterDuff.Mode.MULTIPLY);
+
+        } else {
+            holder.name.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+        }
+
         holder.screenName.setText(user.screenName);
         holder.phoneIcon.setVisibility(user.userPhone != null && user.userPhone.length() > 0 ? View.VISIBLE : View.GONE);
         holder.skypeIcon.setVisibility(user.skypeName != null && user.skypeName.length() > 0 ? View.VISIBLE : View.GONE);
@@ -109,9 +117,6 @@ public class PeopleDirectoryListAdapter extends BaseAdapter implements Filterabl
 
         if (isTablet && holder.pointer != null)
             holder.pointer.setVisibility(selectedItem == position ? View.VISIBLE : View.GONE);
-
-        holder.fav.setVisibility(user.favorite ? View.VISIBLE : View.INVISIBLE);
-
         return convertView;
     }
 
@@ -123,18 +128,15 @@ public class PeopleDirectoryListAdapter extends BaseAdapter implements Filterabl
         public ImageView phoneIcon;
         public ImageView emailIcon;
         public ImageView pointer;
-        public ImageView fav;
     }
 
     @Override
     public android.widget.Filter getFilter() {
         return new Filter() {
-
             @Override
             protected FilterResults performFiltering(CharSequence constraint) {
                 FilterResults returnValues = new FilterResults();
                 ArrayList<User> results = new ArrayList<>();
-
                 if (users != null && users.size() > 0) {
                     if (constraint == null || constraint.length() == 0) {
                         returnValues.values = users;

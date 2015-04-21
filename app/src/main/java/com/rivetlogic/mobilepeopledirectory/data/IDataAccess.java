@@ -1,5 +1,7 @@
 package com.rivetlogic.mobilepeopledirectory.data;
 
+import android.database.Cursor;
+
 import com.rivetlogic.mobilepeopledirectory.model.User;
 
 import java.util.ArrayList;
@@ -28,6 +30,10 @@ public interface IDataAccess {
     public void updateUser(User user);
 
     public ArrayList<User> getUsers();
+
+    Cursor getUsersCursor();
+
+    int getUserCount();
 
     long getModifiedDate();
 }

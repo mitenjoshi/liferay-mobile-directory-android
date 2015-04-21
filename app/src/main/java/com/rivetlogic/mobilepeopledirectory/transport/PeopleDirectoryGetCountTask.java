@@ -1,6 +1,5 @@
 package com.rivetlogic.mobilepeopledirectory.transport;
 
-import android.content.Context;
 import android.os.AsyncTask;
 
 import com.liferay.mobile.android.service.Session;
@@ -14,21 +13,19 @@ import org.json.JSONObject;
  * Created by lorenz on 1/13/15.
  */
 
-public class PeopleDirectoryUpdateTask extends AsyncTask<Void, String, Users> {
-    private PeopleDirectoryUpdateTaskCallback listener;
-    private long modifiedDate;
+public class PeopleDirectoryGetCountTask extends AsyncTask<Void, String, Integer> {
+    private PeopleDirectoryGetCountTaskCallback listener;
 
     private Exception e;
 
-    public interface PeopleDirectoryUpdateTaskCallback {
+    public interface PeopleDirectoryGetCountTaskCallback {
         void onPreExecute();
-        void onSuccess(Users users);
+        void onSuccess(int count);
         void onCancel(String error);
     }
 
-    public PeopleDirectoryUpdateTask(PeopleDirectoryUpdateTaskCallback listener, long modifiedDate) {
+    public PeopleDirectoryGetCountTask(PeopleDirectoryGetCountTaskCallback listener) {
         this.listener = listener;
-        this.modifiedDate = modifiedDate;
     }
 
     @Override
@@ -43,31 +40,25 @@ public class PeopleDirectoryUpdateTask extends AsyncTask<Void, String, Users> {
     }
 
     @Override
-    protected Users doInBackground(Void... params) {
+    protected Integer doInBackground(Void... params) {
         Session session = SettingsUtil.getSession();
         PeopleDirectoryService ser = new PeopleDirectoryService(session);
-
         try {
-            int total = ser.getActiveUsersCount();
-            JSONObject json = ser.usersFetchByDate(modifiedDate, 0, total);
-            Users users = new Users(json);
-            return users;
-
+            return ser.getActiveUsersCount();
         } catch (Exception e) {
-            this.e = e;
-            cancel(true);
+           this.e = e;
         }
-        return null;
+        return 0;
     }
 
     @Override
-    public void onCancelled(Users users) {
+    public void onCancelled(Integer count) {
         listener.onCancel(e.getMessage());
     }
 
     @Override
-    public void onPostExecute(Users users) {
-        listener.onSuccess(users);
+    public void onPostExecute(Integer count) {
+        listener.onSuccess(count);
     }
 
 }

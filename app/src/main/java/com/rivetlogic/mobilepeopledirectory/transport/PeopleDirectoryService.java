@@ -1,4 +1,4 @@
-/**
+package com.rivetlogic.mobilepeopledirectory.transport; /**
  * Copyright (c) 2000-present Liferay, Inc. All rights reserved.
  *
  * This library is free software; you can redistribute it and/or modify it under
@@ -12,8 +12,6 @@
  * details.
  */
 
-package com.rivetlogic.mobilepeopledirectory.transport;
-
 import com.liferay.mobile.android.service.BaseService;
 import com.liferay.mobile.android.service.JSONObjectWrapper;
 import com.liferay.mobile.android.service.Session;
@@ -21,6 +19,8 @@ import com.liferay.mobile.android.service.Session;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.sql.Timestamp;
 
 /**
  * @author Bruno Farache
@@ -98,13 +98,15 @@ public class PeopleDirectoryService extends BaseService {
 		return _result.getJSONObject(0);
 	}
 
-	public JSONObject usersFetchByDate(long modifiedDate) throws Exception {
+	public JSONObject usersFetchByDate(long modifiedDate, int start, int end) throws Exception {
 		JSONObject _command = new JSONObject();
 
 		try {
 			JSONObject _params = new JSONObject();
 
-			_params.put("modifiedDate", modifiedDate);
+			_params.put("modifiedDate", new Timestamp(modifiedDate));
+			_params.put("start", start);
+			_params.put("end", end);
 
 			_command.put("/people-directory-services-portlet/peopledirectory/users-fetch-by-date", _params);
 		}

@@ -23,7 +23,7 @@ public class SettingsUtil {
     }
 
     public static Session getDefaultSession() {
-        return new SessionImpl(getServer(), new BasicAuthentication("martin.zary@rivetlogic.com", "martin"));
+        return new SessionImpl(getServer(), new BasicAuthentication("testMPD@rivetlogic.com", "password"));
     }
 
     public static Session getSession() {

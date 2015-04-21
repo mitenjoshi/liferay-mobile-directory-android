@@ -1,10 +1,8 @@
 package com.rivetlogic.mobilepeopledirectory.fragment;
 
 import android.app.Activity;
-
 import android.app.ProgressDialog;
 import android.content.res.TypedArray;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -16,38 +14,39 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.rivetlogic.liferayrivet.util.ToastUtil;
 import com.rivetlogic.mobilepeopledirectory.R;
-import com.rivetlogic.mobilepeopledirectory.adapter.PeopleDirectoryCursorAdapter;
 import com.rivetlogic.mobilepeopledirectory.adapter.PeopleDirectoryListAdapter;
 import com.rivetlogic.mobilepeopledirectory.data.DataAccess;
 import com.rivetlogic.mobilepeopledirectory.data.IDataAccess;
-import com.rivetlogic.mobilepeopledirectory.data.UserTable;
+import com.rivetlogic.mobilepeopledirectory.model.User;
 import com.rivetlogic.mobilepeopledirectory.model.Users;
 import com.rivetlogic.mobilepeopledirectory.transport.PeopleDirectoryUpdateTask;
-import com.rivetlogic.mobilepeopledirectory.model.User;
 
 import java.util.ArrayList;
 
 /**
  * Created by lorenz on 1/15/15.
  */
-public class DirectoryListFragment extends Fragment {
+public class DirectoryFavoritesFragment extends Fragment {
     private static final String KEY_STYLE_ID = "com.rivetlogic.liferay.screens.login.LRDirectoryListFragment_styleResId";
 
     private int styleResId;
     private ListView lv;
-    private PeopleDirectoryCursorAdapter cursorAdapter;
+    private PeopleDirectoryListAdapter adapter;
     private DirectoryListInterface listener;
     private IDataAccess da;
+    private ProgressDialog pd;
+    private ArrayList<User> users;
     private SwipeRefreshLayout swipeLayout;
     private int iconColor;
     private SearchView searchView;
     private Toolbar toolbar;
 
-    public static DirectoryListFragment newInstance(int styleResId) {
-        DirectoryListFragment fragment = new DirectoryListFragment();
+    public static DirectoryFavoritesFragment newInstance(int styleResId) {
+        DirectoryFavoritesFragment fragment = new DirectoryFavoritesFragment();
         Bundle args = new Bundle();
         args.putInt(KEY_STYLE_ID, styleResId);
         fragment.setArguments(args);
@@ -57,6 +56,15 @@ public class DirectoryListFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (users == null)
+            updateUserList();
+        else
+            updateAdapter(users);
     }
 
     @Override
@@ -85,7 +93,10 @@ public class DirectoryListFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_directory_list, null);
 
         toolbar = (Toolbar) v.findViewById(R.id.toolbar);
-        toolbar.inflateMenu(R.menu.menu_list);
+        toolbar.inflateMenu(R.menu.menu_favorites);
+        TextView title = (TextView) v.findViewById(R.id.toolbar_title);
+        title.setText(getString(R.string.action_favorites));
+
         searchView = (SearchView) toolbar.getMenu().findItem(R.id.action_search).getActionView();
         searchView.setOnQueryTextListener(searchListener);
         toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
@@ -93,44 +104,45 @@ public class DirectoryListFragment extends Fragment {
             public boolean onMenuItemClick(MenuItem menuItem) {
                 switch (menuItem.getItemId()) {
                     case R.id.action_about:
-                        listener.about();
+                            listener.about();
                         break;
                     case R.id.action_logout:
                         listener.logout();
-                        break;
-                    case R.id.action_favorites:
-                        listener.onFavoritesClicked();
                         break;
                 }
                 return false;
             }
         });
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getActivity().onBackPressed();
+            }
+        });
 
         lv = (ListView) v.findViewById(R.id.fragment_directory_listview);
-        Cursor mCursor = da.getUsersCursor();
-        cursorAdapter = new PeopleDirectoryCursorAdapter(getActivity(), mCursor, 0);
-        lv.setAdapter(cursorAdapter);
+        adapter = new PeopleDirectoryListAdapter(getActivity());
+        lv.setAdapter(adapter);
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Cursor mCursor = (Cursor) cursorAdapter.getItem(position);
-                User user = new User(mCursor);
+                User user = (User) adapter.getItem(position);
                 listener.onItemClicked(user);
+                adapter.setSelected(position);
             }
         });
         swipeLayout = (SwipeRefreshLayout) v.findViewById(R.id.fragment_directory_listview_swipe_container);
         swipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                updateUserList();
+                refreshUserList();
             }
         });
         swipeLayout.setColorSchemeColors(getResources().getColor(android.R.color.holo_blue_dark),
                 getResources().getColor(android.R.color.holo_green_dark),
                 getResources().getColor(android.R.color.holo_orange_dark),
                 getResources().getColor(android.R.color.holo_red_dark));
-
-        updateUserList();
 
         return v;
     }
@@ -143,7 +155,7 @@ public class DirectoryListFragment extends Fragment {
 
         @Override
         public boolean onQueryTextChange(String s) {
-            filterBaseList(s);
+            filterList(s);
             return true;
         }
     };
@@ -160,27 +172,53 @@ public class DirectoryListFragment extends Fragment {
         }
     }
 
-    public void filterBaseList(String input) {
-        // baseAdapter.getFilter().filter(input);
+    public void filterList(String input) {
+        adapter.getFilter().filter(input);
     }
 
     private void updateUserList() {
+        ArrayList<User> users = da.getUsers();
+        updateAdapter(users);
+    }
+
+    private void refreshUserList() {
         PeopleDirectoryUpdateTask updateTask = new PeopleDirectoryUpdateTask(new PeopleDirectoryUpdateTask.PeopleDirectoryUpdateTaskCallback() {
             @Override
             public void onPreExecute() {
-
+                if (!swipeLayout.isRefreshing()) {
+                    pd = ProgressDialog.show(getActivity(), null, null);
+                    pd.setMessage(getString(R.string.msg_updating_people_directory));
+                }
             }
 
             @Override
             public void onSuccess(Users users) {
                 if (users != null && users.total > 0) {
                     da.updateUsers(users.list);
-                    updateAdapter();
                 }
+
+                try {
+                    if (pd != null && pd.isShowing())
+                        pd.dismiss();
+                } catch (IllegalArgumentException e) {
+
+                } catch (Exception e) {
+
+                } finally {
+                    pd = null;
+                }
+
+                if (swipeLayout != null && swipeLayout.isRefreshing())
+                    swipeLayout.setRefreshing(false);
             }
 
             @Override
             public void onCancel(String error) {
+                if (pd != null && pd.isShowing())
+                    pd.dismiss();
+                if (swipeLayout != null && swipeLayout.isRefreshing())
+                    swipeLayout.setRefreshing(false);
+
                 ToastUtil.show(getActivity(), error, true);
             }
 
@@ -189,10 +227,13 @@ public class DirectoryListFragment extends Fragment {
         updateTask.execute();
     }
 
-    private void updateAdapter() {
-        cursorAdapter.changeCursor(da.getUsersCursor());
-        if (swipeLayout != null && swipeLayout.isRefreshing())
-            swipeLayout.setRefreshing(false);
+    private void updateAdapter(ArrayList<User> users) {
+        ArrayList<User> favoriteUsers = new ArrayList<>();
+        for(User user : users) {
+            if(user.favorite)
+                favoriteUsers.add(user);
+        }
+        adapter.updateAdapter(favoriteUsers);
     }
 
 }

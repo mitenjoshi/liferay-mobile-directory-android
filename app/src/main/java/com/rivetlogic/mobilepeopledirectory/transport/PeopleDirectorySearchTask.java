@@ -5,7 +5,7 @@ import android.os.AsyncTask;
 import com.liferay.mobile.android.service.Session;
 import com.liferay.mobile.android.v62.user.UserService;
 import com.rivetlogic.liferayrivet.util.SettingsUtil;
-import com.rivetlogic.mobilepeopledirectory.model.PeopleDirectory;
+import com.rivetlogic.mobilepeopledirectory.model.Users;
 
 import org.json.JSONObject;
 
@@ -13,7 +13,7 @@ import org.json.JSONObject;
  * Created by lorenz on 1/13/15.
  */
 
-public class PeopleDirectorySearchTask extends AsyncTask<Void, String, PeopleDirectory> {
+public class PeopleDirectorySearchTask extends AsyncTask<Void, String, Users> {
     private PeopleDirectorySearchTaskCallback listener;
     private String keywords;
     private int start;
@@ -21,9 +21,9 @@ public class PeopleDirectorySearchTask extends AsyncTask<Void, String, PeopleDir
     private Exception e;
 
     public interface PeopleDirectorySearchTaskCallback {
-        public void onPreExecute();
-        public void onSuccess(PeopleDirectory dir);
-        public void onCancel(String error);
+        void onPreExecute();
+        void onSuccess(Users dir);
+        void onCancel(String error);
     }
 
     public PeopleDirectorySearchTask(PeopleDirectorySearchTaskCallback listener, String keywords, int start, int end) {
@@ -45,7 +45,7 @@ public class PeopleDirectorySearchTask extends AsyncTask<Void, String, PeopleDir
     }
 
     @Override
-    protected PeopleDirectory doInBackground(Void... params) {
+    protected Users doInBackground(Void... params) {
         Session session = SettingsUtil.getSession();
 
 
@@ -60,7 +60,7 @@ public class PeopleDirectorySearchTask extends AsyncTask<Void, String, PeopleDir
         PeopleDirectoryService ser = new PeopleDirectoryService(session);
         try {
             JSONObject json = ser.search(keywords, start, end);
-            PeopleDirectory dir = new PeopleDirectory(json);
+            Users dir = new Users(json);
             return dir;
         } catch (Exception e) {
             this.e = e;
@@ -70,12 +70,12 @@ public class PeopleDirectorySearchTask extends AsyncTask<Void, String, PeopleDir
     }
 
     @Override
-    public void onCancelled(PeopleDirectory dir) {
+    public void onCancelled(Users dir) {
         listener.onCancel(e.getMessage());
     }
 
     @Override
-    public void onPostExecute(PeopleDirectory dir) {
+    public void onPostExecute(Users dir) {
         listener.onSuccess(dir);
     }
 

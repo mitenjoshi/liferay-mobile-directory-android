@@ -1,5 +1,9 @@
 package com.rivetlogic.mobilepeopledirectory.model;
 
+import android.database.Cursor;
+
+import com.rivetlogic.mobilepeopledirectory.data.UserTable;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -28,6 +32,7 @@ public class User implements Serializable {
 
     public static final String USER_ID = "userId";
     public static final String MODIFIED_DATE = "modifiedDate";
+    public static final String DELETED = "deleted";
     public static final String PORTRAIT_URL = "portraitUrl";
     public static final String SCREEN_NAME = "screenName";
     public static final String EMAIL_ADDRESS = "emailAddress";
@@ -40,6 +45,7 @@ public class User implements Serializable {
 
     public int userId;
     public long modifiedDate;
+    public boolean deleted;
     public String portraitUrl;
     public String screenName;
     public String emailAddress;
@@ -56,18 +62,34 @@ public class User implements Serializable {
     }
 
     public User(JSONObject json) throws JSONException {
-        userId = json.getInt(USER_ID);
-        modifiedDate = json.getLong(MODIFIED_DATE);
-        portraitUrl = json.getString(PORTRAIT_URL);
-        screenName = json.getString(SCREEN_NAME);
-        emailAddress = json.getString(EMAIL_ADDRESS);
-        userPhone = json.getString(USER_PHONE);
-        birthDate = json.getLong(BIRTH_DATE);
-        fullName = json.getString(FULL_NAME);
-        skypeName = json.getString(SKYPE_NAME);
-        jobTitle = json.getString(JOB_TITLE);
-        city = json.getString(CITY);
-        favorite = false;
+        this.userId = json.getInt(USER_ID);
+        this.modifiedDate = json.getLong(MODIFIED_DATE);
+        this.deleted = json.getBoolean(DELETED);
+        this.portraitUrl = json.getString(PORTRAIT_URL);
+        this.screenName = json.getString(SCREEN_NAME);
+        this.emailAddress = json.getString(EMAIL_ADDRESS);
+        this.userPhone = json.getString(USER_PHONE);
+        this.birthDate = json.getLong(BIRTH_DATE);
+        this.fullName = json.getString(FULL_NAME);
+        this.skypeName = json.getString(SKYPE_NAME);
+        this.jobTitle = json.getString(JOB_TITLE);
+        this.city = json.getString(CITY);
+        this.favorite = false;
+    }
+
+    public User(Cursor mCursor) {
+        this.userId = mCursor.getInt(mCursor.getColumnIndex(UserTable.KEY_USER_ID));
+        this.modifiedDate = mCursor.getLong(mCursor.getColumnIndex(UserTable.KEY_MODIFIED_DATE));
+        this.portraitUrl = mCursor.getString(mCursor.getColumnIndex(UserTable.KEY_PORTRAIT_URL));
+        this.screenName = mCursor.getString(mCursor.getColumnIndex(UserTable.KEY_SCREEN_NAME));
+        this.emailAddress = mCursor.getString(mCursor.getColumnIndex(UserTable.KEY_EMAIL_ADDRESS));
+        this.userPhone = mCursor.getString(mCursor.getColumnIndex(UserTable.KEY_USER_PHONE));
+        this.birthDate = mCursor.getLong(mCursor.getColumnIndex(UserTable.KEY_BIRTH_DATE));
+        this.fullName = mCursor.getString(mCursor.getColumnIndex(UserTable.KEY_FULL_NAME));
+        this.skypeName = mCursor.getString(mCursor.getColumnIndex(UserTable.KEY_SKYPE_NAME));
+        this.jobTitle = mCursor.getString(mCursor.getColumnIndex(UserTable.KEY_JOB_TITLE));
+        this.city = mCursor.getString(mCursor.getColumnIndex(UserTable.KEY_CITY));
+        this.favorite = mCursor.getInt(mCursor.getColumnIndex(UserTable.KEY_FAVORITE)) == 1;
     }
 
 }

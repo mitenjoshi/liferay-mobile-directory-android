@@ -2,6 +2,7 @@ package com.rivetlogic.mobilepeopledirectory.data;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.preference.PreferenceManager;
 
 import com.rivetlogic.liferayrivet.util.SettingsUtil;
@@ -78,6 +79,17 @@ public class DataAccess implements IDataAccess {
     public ArrayList<User> getUsers() {
         return userTable.getUsers();
     }
+
+    @Override
+    public Cursor getUsersCursor() {
+        return userTable.getUsersCursor();
+    }
+
+    @Override
+    public int getUserCount() {
+        return userTable.getCount();
+    }
+
     @Override
     public long getModifiedDate() {
           return userTable.getModifiedDate();

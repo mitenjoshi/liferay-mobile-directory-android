@@ -18,6 +18,7 @@
 
         <TextView
             android:id="@+id/list_row_directory_name"
+            android:drawablePadding="4dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/black_70"
@@ -64,15 +65,5 @@
 
     </LinearLayout>
 
-    <ImageView
-        android:id="@+id/list_row_directory_icon_fav"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:tint="@color/primary"
-        android:visibility="gone"
-        android:layout_above="@id/list_row_directory_icon_container"
-        android:layout_alignParentRight="true"
-        android:layout_marginRight="16dp"
-        android:src="@drawable/ic_star_white_18dp" />
 
 </RelativeLayout>

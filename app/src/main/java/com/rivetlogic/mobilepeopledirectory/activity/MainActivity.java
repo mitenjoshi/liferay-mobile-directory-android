@@ -26,11 +26,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBarActivity;
-import android.support.v7.widget.SearchView;
-import android.support.v7.widget.Toolbar;
-import android.view.Gravity;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -38,9 +33,11 @@ import android.widget.Toast;
 import com.crashlytics.android.Crashlytics;
 import com.rivetlogic.liferayrivet.screens.forgotpassword.LRPasswordFragment;
 import com.rivetlogic.liferayrivet.screens.login.LRLoginFragment;
-import com.rivetlogic.liferayrivet.util.ToastUtil;
+import com.rivetlogic.mobilepeopledirectory.data.DataAccess;
 import com.rivetlogic.mobilepeopledirectory.fragment.DirectoryDetailFragment;
+import com.rivetlogic.mobilepeopledirectory.fragment.DirectoryFavoritesFragment;
 import com.rivetlogic.mobilepeopledirectory.fragment.DirectoryListFragment;
+import com.rivetlogic.mobilepeopledirectory.fragment.DirectoryListInterface;
 import com.rivetlogic.mobilepeopledirectory.model.User;
 import com.rivetlogic.liferayrivet.util.SettingsUtil;
 import com.rivetlogic.mobilepeopledirectory.R;
@@ -56,11 +53,12 @@ import java.util.Arrays;
 public class MainActivity extends ActionBarActivity implements
         LRLoginFragment.LRLoginFragmentCallback,
         LRPasswordFragment.LRPasswordFragmentCallback,
-        DirectoryListFragment.DirectoryListFragmentCallback, DirectoryDetailFragment.DirectoryDetailFragmentCallback {
+        DirectoryListInterface, DirectoryDetailFragment.DirectoryDetailFragmentCallback {
 
     private static final String TAG_LOGIN_FRAGMENT = "com.rivetlogic.liferay.screens.login.LRLoginFragment";
     private static final String TAG_PASSWORD_FRAGMENT = "com.rivetlogic.liferay.screens.login.LRForgotPasswordFragment";
     private static final String TAG_LIST_FRAGMENT = "com.rivetlogic.liferay.screens.login.LRDirectoryListFragment";
+    private static final String TAG_LIST_FAV_FRAGMENT = "com.rivetlogic.liferay.screens.login.LRDirectoryListFavoritesFragment";
     private static final String TAG_DETAIL_FRAGMENT = "com.rivetlogic.liferay.screens.login.LRDirectoryDetailFragment";
     private static final int TAG_QR_RESULT = 1001;
     public static final String MIME_TEXT_PLAIN = "text/plain";
@@ -96,6 +94,7 @@ public class MainActivity extends ActionBarActivity implements
         setTheme(R.style.MPDTheme);
         super.onCreate(savedInstanceState);
         Crashlytics.start(this);
+        DataAccess.getInstance(this);
         SettingsUtil.init(this);
         setContentView(R.layout.activity_main);
         getSupportFragmentManager().addOnBackStackChangedListener(mOnBackStackChangedListener);
@@ -126,7 +125,6 @@ public class MainActivity extends ActionBarActivity implements
     };
 
     public void addLoginFragment() {
-
         FragmentManager fm = getSupportFragmentManager();
         final FragmentTransaction ft = fm.beginTransaction();
         final Fragment prev = fm.findFragmentByTag(TAG_LOGIN_FRAGMENT);
@@ -175,7 +173,7 @@ public class MainActivity extends ActionBarActivity implements
         if (prev == null) {
             DirectoryListFragment listFragment = DirectoryListFragment.newInstance(R.style.CustomListTheme);
             if (getResources().getBoolean(R.bool.tablet_10)) {
-                ft.replace(R.id.list_container, listFragment, TAG_DETAIL_FRAGMENT);
+                ft.replace(R.id.list_container, listFragment, TAG_LIST_FRAGMENT);
                 final Fragment frag = fm.findFragmentByTag(TAG_LOGIN_FRAGMENT);
                 if (frag != null) {
                     ft.remove(frag);
@@ -186,6 +184,27 @@ public class MainActivity extends ActionBarActivity implements
                 ft.replace(R.id.main_container, listFragment, TAG_LIST_FRAGMENT);
                 ft.commit();
             }
+        }
+    }
+
+    public void addDirectoryListFavoritesFragment() {
+        FragmentManager fm = getSupportFragmentManager();
+        final FragmentTransaction ft = fm.beginTransaction();
+        final Fragment prev = fm.findFragmentByTag(TAG_LIST_FAV_FRAGMENT);
+        if (prev == null) {
+            DirectoryFavoritesFragment listFragment = DirectoryFavoritesFragment.newInstance(R.style.CustomListTheme);
+            if (getResources().getBoolean(R.bool.tablet_10)) {
+                ft.replace(R.id.list_container, listFragment, TAG_LIST_FAV_FRAGMENT);
+                ft.addToBackStack(TAG_LIST_FAV_FRAGMENT);
+                final Fragment frag = fm.findFragmentByTag(TAG_LOGIN_FRAGMENT);
+                if (frag != null) {
+                    ft.remove(frag);
+                }
+            } else {
+                ft.replace(R.id.main_container, listFragment, TAG_LIST_FAV_FRAGMENT);
+                ft.addToBackStack(TAG_LIST_FAV_FRAGMENT);
+            }
+            ft.commit();
         }
     }
 
@@ -259,9 +278,19 @@ public class MainActivity extends ActionBarActivity implements
     }
 
     @Override
+    public void onFavoritesClicked() {
+        addDirectoryListFavoritesFragment();
+    }
+
+    @Override
     public void logout() {
         SettingsUtil.setPassword("");
         addLoginFragment();
+    }
+
+    @Override
+    public void about() {
+
     }
 
     /**
