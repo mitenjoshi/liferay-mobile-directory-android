@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.text.TextUtils;
 
 import com.rivetlogic.mobilepeopledirectory.data.Database;
 import com.rivetlogic.mobilepeopledirectory.data.TableRow;
@@ -132,9 +133,21 @@ public class UserTable extends Database {
         return null;
     }
 
-    public synchronized Cursor getUsersCursor() {
-        String sql = String.format("SELECT rowid _id,* from %s", TABLE_NAME);
-        Cursor mCursor = mDatabase.rawQuery(sql, null);
+    public synchronized Cursor getUsersCursor(boolean favorites, String filter) {
+        StringBuilder sb = new StringBuilder(String.format("SELECT rowid _id,* from %s", TABLE_NAME));
+        if(favorites) {
+            sb.append(String.format(" WHERE %s = 1", KEY_FAVORITE));
+        }
+        if(!TextUtils.isEmpty(filter)) {
+            if(favorites) {
+                sb.append(" AND");
+            }
+            else {
+                sb.append(" WHERE");
+            }
+            sb.append(" " + KEY_FULL_NAME + " LIKE '%" + filter + "%'");
+        }
+        Cursor mCursor = mDatabase.rawQuery(sb.toString(), null);
         return mCursor;
     }
 

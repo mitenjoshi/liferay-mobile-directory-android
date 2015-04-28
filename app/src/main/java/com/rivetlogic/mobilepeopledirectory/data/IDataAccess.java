@@ -31,7 +31,7 @@ public interface IDataAccess {
 
     public ArrayList<User> getUsers();
 
-    Cursor getUsersCursor();
+    Cursor getUsersCursor(boolean favorites, String filter);
 
     int getUserCount();
 

@@ -9,8 +9,6 @@ public interface DirectoryListInterface {
 
     void onItemClicked(User user);
 
-    void onFavoritesClicked();
-
     void logout();
 
     void about();

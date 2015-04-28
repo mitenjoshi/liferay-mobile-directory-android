@@ -15,7 +15,8 @@
         android:id="@+id/action_favorites"
         android:title="@string/action_favorites"
         android:orderInCategory="100"
-        android:icon="@drawable/ic_star_white_24dp"
+        android:checkable="true"
+        android:icon="@drawable/ic_star_outline_white_24dp"
         app:showAsAction="always" />
 
     <item

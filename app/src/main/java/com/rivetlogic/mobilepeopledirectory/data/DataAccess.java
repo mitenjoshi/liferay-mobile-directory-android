@@ -21,6 +21,7 @@ public class DataAccess implements IDataAccess {
 
     private DataAccess(Context context) {
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        SettingsUtil.init(context);
         if(getCount() == 0) {
             String uuid = UUID.randomUUID().toString();
             setMasterPassword(uuid);
@@ -92,8 +93,8 @@ public class DataAccess implements IDataAccess {
     }
 
     @Override
-    public Cursor getUsersCursor() {
-        return userTable.getUsersCursor();
+    public Cursor getUsersCursor(boolean favorites, String filter) {
+        return userTable.getUsersCursor(favorites, filter);
     }
 
     @Override

@@ -13,12 +13,10 @@ import android.nfc.Tag;
 import android.nfc.tech.Ndef;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -26,19 +24,14 @@ import android.widget.Toast;
 import com.crashlytics.android.Crashlytics;
 import com.rivetlogic.liferayrivet.screens.forgotpassword.LRPasswordFragment;
 import com.rivetlogic.liferayrivet.screens.login.LRLoginFragment;
-import com.rivetlogic.liferayrivet.util.ToastUtil;
+import com.rivetlogic.liferayrivet.util.SettingsUtil;
+import com.rivetlogic.mobilepeopledirectory.R;
 import com.rivetlogic.mobilepeopledirectory.data.DataAccess;
 import com.rivetlogic.mobilepeopledirectory.data.IDataAccess;
 import com.rivetlogic.mobilepeopledirectory.fragment.DirectoryDetailFragment;
-import com.rivetlogic.mobilepeopledirectory.fragment.DirectoryFavoritesFragment;
 import com.rivetlogic.mobilepeopledirectory.fragment.DirectoryListFragment;
 import com.rivetlogic.mobilepeopledirectory.fragment.DirectoryListInterface;
 import com.rivetlogic.mobilepeopledirectory.model.User;
-import com.rivetlogic.liferayrivet.util.SettingsUtil;
-import com.rivetlogic.mobilepeopledirectory.R;
-import com.rivetlogic.mobilepeopledirectory.model.Users;
-import com.rivetlogic.mobilepeopledirectory.transport.PeopleDirectoryGetCountTask;
-import com.rivetlogic.mobilepeopledirectory.transport.PeopleDirectoryUpdateTask;
 import com.rivetlogic.mobilepeopledirectory.utilities.Utilities;
 
 import org.json.JSONException;
@@ -56,99 +49,14 @@ public class MainActivity extends ActionBarActivity implements
     private static final String TAG_LOGIN_FRAGMENT = "com.rivetlogic.liferay.screens.login.LRLoginFragment";
     private static final String TAG_PASSWORD_FRAGMENT = "com.rivetlogic.liferay.screens.login.LRForgotPasswordFragment";
     private static final String TAG_LIST_FRAGMENT = "com.rivetlogic.liferay.screens.login.LRDirectoryListFragment";
-    private static final String TAG_LIST_FAV_FRAGMENT = "com.rivetlogic.liferay.screens.login.LRDirectoryListFavoritesFragment";
     private static final String TAG_DETAIL_FRAGMENT = "com.rivetlogic.liferay.screens.login.LRDirectoryDetailFragment";
     private static final int TAG_QR_RESULT = 1001;
     public static final String MIME_TEXT_PLAIN = "text/plain";
-
-    public static final int  MAX_COUNT = 1000;
 
     private IDataAccess da;
     private ProgressDialog pd;
     private NfcAdapter mNfcAdapter;
     private ImageView qrButton;
-
-
-
-   /* @Override
-    public void updateUsers() {
-        getUserCount();
-    }
-
-    private void getUserCount() {
-        new PeopleDirectoryGetCountTask(new PeopleDirectoryGetCountTask.PeopleDirectoryGetCountTaskCallback() {
-            @Override
-            public void onPreExecute() {
-
-            }
-
-            @Override
-            public void onSuccess(int count) {
-                updateUserList(count);
-            }
-
-            @Override
-            public void onCancel(String error) {
-
-            }
-        }).execute();
-    }
-
-    private void updateUserList(int total) {
-        int totalUsersInDB = da.getUserCount();
-        Log.d("totalUsersinDb", String.valueOf(totalUsersInDB));
-        if(totalUsersInDB <= total) {
-            fetchUsers(0, totalUsersInDB);
-        }
-        else {
-            long modifiedDate = da.getModifiedDate();
-            fetchUsers(modifiedDate, 0);
-            Log.d("modifiedDate", String.valueOf(modifiedDate));
-        }
-    }
-
-    private void fetchUsers(long modifiedDate, int start) {
-        new PeopleDirectoryUpdateTask(new PeopleDirectoryUpdateTask.PeopleDirectoryUpdateTaskCallback() {
-            @Override
-            public void onPreExecute() {
-
-            }
-
-            @Override
-            public void onSuccess(Users users) {
-                if (users != null && users.total > 0) {
-
-
-                    long s = System.currentTimeMillis();
-
-                    da.updateUsers(users.list);
-
-                    long e = System.currentTimeMillis();
-
-                    Log.d("updateTime", String.valueOf(e-s));
-
-                    if(users.total == MAX_COUNT) {
-                        updateUsers();
-                    }
-
-                    FragmentManager fm = getSupportFragmentManager();
-                    final Fragment prev = fm.findFragmentByTag(TAG_LIST_FRAGMENT);
-
-                    if(prev != null & prev instanceof DirectoryListFragment)
-                        ((DirectoryListFragment) prev).updateAdapter();
-
-
-
-                }
-            }
-
-            @Override
-            public void onCancel(String error) {
-                ToastUtil.show(MainActivity.this, error, true);
-            }
-
-        }, modifiedDate, start, start + MAX_COUNT).execute();
-    }*/
 
     @Override
     protected void onPause() {
@@ -178,7 +86,6 @@ public class MainActivity extends ActionBarActivity implements
         super.onCreate(savedInstanceState);
         Crashlytics.start(this);
         da = DataAccess.getInstance(this);
-        SettingsUtil.init(this);
         setContentView(R.layout.activity_main);
         getSupportFragmentManager().addOnBackStackChangedListener(mOnBackStackChangedListener);
 
@@ -270,27 +177,6 @@ public class MainActivity extends ActionBarActivity implements
         }
     }
 
-   /* public void addDirectoryListFavoritesFragment() {
-        FragmentManager fm = getSupportFragmentManager();
-        final FragmentTransaction ft = fm.beginTransaction();
-        final Fragment prev = fm.findFragmentByTag(TAG_LIST_FAV_FRAGMENT);
-        if (prev == null) {
-            DirectoryFavoritesFragment listFragment = DirectoryFavoritesFragment.newInstance(R.style.CustomListTheme);
-            if (getResources().getBoolean(R.bool.tablet_10)) {
-                ft.replace(R.id.list_container, listFragment, TAG_LIST_FAV_FRAGMENT);
-                ft.addToBackStack(TAG_LIST_FAV_FRAGMENT);
-                final Fragment frag = fm.findFragmentByTag(TAG_LOGIN_FRAGMENT);
-                if (frag != null) {
-                    ft.remove(frag);
-                }
-            } else {
-                ft.replace(R.id.main_container, listFragment, TAG_LIST_FAV_FRAGMENT);
-                ft.addToBackStack(TAG_LIST_FAV_FRAGMENT);
-            }
-            ft.commit();
-        }
-    }*/
-
     public void addDirectoryDetailFragment(User user) {
         FragmentManager fm = getSupportFragmentManager();
         final FragmentTransaction ft = fm.beginTransaction();
@@ -361,11 +247,6 @@ public class MainActivity extends ActionBarActivity implements
     }
 
     @Override
-    public void onFavoritesClicked() {
-        addDirectoryListFavoritesFragment();
-    }
-
-    @Override
     public void logout() {
         SettingsUtil.setPassword("");
         addLoginFragment();
@@ -389,7 +270,6 @@ public class MainActivity extends ActionBarActivity implements
         IntentFilter[] filters = new IntentFilter[1];
         String[][] techList = new String[][]{};
 
-        // Notice that this is the same filter as in our manifest.
         filters[0] = new IntentFilter();
         filters[0].addAction(NfcAdapter.ACTION_NDEF_DISCOVERED);
         filters[0].addCategory(Intent.CATEGORY_DEFAULT);
@@ -460,7 +340,7 @@ public class MainActivity extends ActionBarActivity implements
                     try {
                         return readText(ndefRecord);
                     } catch (UnsupportedEncodingException e) {
-                        String foo = "bar";
+
                     }
                 }
             }
@@ -493,7 +373,7 @@ public class MainActivity extends ActionBarActivity implements
                 autoLoginQR(contents);
             }
             if (resultCode == RESULT_CANCELED) {
-                //handle cancel
+
             }
         }
     }
@@ -534,3 +414,83 @@ public class MainActivity extends ActionBarActivity implements
     }
 
 }
+
+ /* @Override
+    public void updateUsers() {
+        getUserCount();
+    }
+
+    private void getUserCount() {
+        new PeopleDirectoryGetCountTask(new PeopleDirectoryGetCountTask.PeopleDirectoryGetCountTaskCallback() {
+            @Override
+            public void onPreExecute() {
+
+            }
+
+            @Override
+            public void onSuccess(int count) {
+                updateUserList(count);
+            }
+
+            @Override
+            public void onCancel(String error) {
+
+            }
+        }).execute();
+    }
+
+    private void updateUserList(int total) {
+        int totalUsersInDB = da.getUserCount();
+        Log.d("totalUsersinDb", String.valueOf(totalUsersInDB));
+        if(totalUsersInDB <= total) {
+            fetchUsers(0, totalUsersInDB);
+        }
+        else {
+            long modifiedDate = da.getModifiedDate();
+            fetchUsers(modifiedDate, 0);
+            Log.d("modifiedDate", String.valueOf(modifiedDate));
+        }
+    }
+
+    private void fetchUsers(long modifiedDate, int start) {
+        new PeopleDirectoryUpdateTask(new PeopleDirectoryUpdateTask.PeopleDirectoryUpdateTaskCallback() {
+            @Override
+            public void onPreExecute() {
+
+            }
+
+            @Override
+            public void onSuccess(Users users) {
+                if (users != null && users.total > 0) {
+
+
+                    long s = System.currentTimeMillis();
+
+                    da.updateUsers(users.list);
+
+                    long e = System.currentTimeMillis();
+
+                    Log.d("updateTime", String.valueOf(e-s));
+
+                    if(users.total == MAX_COUNT) {
+                        updateUsers();
+                    }
+
+                    FragmentManager fm = getSupportFragmentManager();
+                    final Fragment prev = fm.findFragmentByTag(TAG_LIST_FRAGMENT);
+
+                    if(prev != null & prev instanceof DirectoryListFragment)
+                        ((DirectoryListFragment) prev).updateAdapter();
+
+                }
+            }
+
+            @Override
+            public void onCancel(String error) {
+                ToastUtil.show(MainActivity.this, error, true);
+            }
+
+        }, modifiedDate, start, start + MAX_COUNT).execute();
+    }*/
+
+
