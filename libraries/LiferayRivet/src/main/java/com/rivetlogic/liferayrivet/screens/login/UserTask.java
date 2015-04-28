@@ -17,11 +17,11 @@ public class UserTask extends AsyncTask<Void, String, JSONObject> {
     private Exception e;
 
     public interface UserTaskCallback {
-        public void onPreExecute();
+        void onPreExecute();
 
-        public void onSuccess(JSONObject obj);
+        void onSuccess(JSONObject obj);
 
-        public void onCancel(String error);
+        void onCancel(String error);
     }
 
     public UserTask(UserTaskCallback listener) {

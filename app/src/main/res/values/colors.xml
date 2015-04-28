@@ -5,6 +5,13 @@
     <color name="black">#ff000000</color>
     <color name="transparent">#00000000</color>
 
+
+    <color name="lifecare_blue">#ff00b5fd</color>
+    <color name="lifecare_green">#ffa1e411</color>
+
+    <color name="disney_blue">#ff1435d0</color>
+    <color name="disney_blue_lt">#ff8acef3</color>
+
     <color name="primary">#fff58220</color>
     <color name="primary_text">#ffffffff</color>
     <color name="secondary">#ffA7A9AC</color>

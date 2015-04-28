@@ -17,6 +17,8 @@ import org.json.JSONObject;
 public class PeopleDirectoryUpdateTask extends AsyncTask<Void, String, Users> {
     private PeopleDirectoryUpdateTaskCallback listener;
     private long modifiedDate;
+    private int start;
+    private int end;
 
     private Exception e;
 
@@ -26,9 +28,11 @@ public class PeopleDirectoryUpdateTask extends AsyncTask<Void, String, Users> {
         void onCancel(String error);
     }
 
-    public PeopleDirectoryUpdateTask(PeopleDirectoryUpdateTaskCallback listener, long modifiedDate) {
+    public PeopleDirectoryUpdateTask(PeopleDirectoryUpdateTaskCallback listener, long modifiedDate, int start, int end) {
         this.listener = listener;
         this.modifiedDate = modifiedDate;
+        this.start = start;
+        this.end = end;
     }
 
     @Override
@@ -48,8 +52,7 @@ public class PeopleDirectoryUpdateTask extends AsyncTask<Void, String, Users> {
         PeopleDirectoryService ser = new PeopleDirectoryService(session);
 
         try {
-            int total = ser.getActiveUsersCount();
-            JSONObject json = ser.usersFetchByDate(modifiedDate, 0, total);
+            JSONObject json = ser.usersFetchByDate(modifiedDate, start, end);
             Users users = new Users(json);
             return users;
 

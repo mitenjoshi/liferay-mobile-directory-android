@@ -47,13 +47,13 @@ public class UserTable extends Database {
             new TableRow(1, KEY_FAVORITE, TableRow.DbType.INT, TableRow.Nullable.FALSE)
     };
 
-    public UserTable(Context context) {
+    public UserTable(Context context, String masterPassword) {
         super();
-        open(context);
+        open(context, masterPassword);
     }
 
-    public void open(Context context) throws SQLException {
-        super.open(context, TABLE_NAME, TABLE_VERSION, tableDef);
+    public void open(Context context, String masterPassword) throws SQLException {
+        super.open(context, masterPassword, TABLE_NAME, TABLE_VERSION, tableDef);
     }
 
     public long getModifiedDate() {

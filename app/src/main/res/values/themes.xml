@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="CustomLoginTheme">
+   <style name="CustomLoginTheme">
         <item name="lrScreenLoginImageBackground">@drawable/background_gradient</item>
         <item name="lrScreenLoginImageTop">@drawable/rl_logo_large</item>
         <item name="lrScreenLoginImageBottom">@null</item>
@@ -12,6 +12,19 @@
         <item name="lrScreenLoginOption1Text">@string/no_account</item>
         <item name="lrScreenLoginOption2Text">@string/forgot_password</item>
     </style>
+
+<!--    <style name="CustomLoginTheme">
+        <item name="lrScreenLoginImageBackground">@color/disney_blue</item>
+        <item name="lrScreenLoginImageTop">@drawable/disney</item>
+        <item name="lrScreenLoginImageBottom">@null</item>
+        <item name="lrScreenLoginButtonTextColor">@color/white</item>
+        <item name="lrScreenLoginButtonBackgroundColor">@color/disney_blue_lt</item>
+        <item name="lrScreenLoginUserDrawable">@drawable/ic_email_white_24dp</item>
+        <item name="lrScreenLoginPasswordDrawable">@drawable/ic_lock_white_24dp</item>
+        <item name="lrScreenLoginOption1Text">@string/no_account</item>
+        <item name="lrScreenLoginOption2Text">@string/forgot_password</item>
+    </style>-->
+
 
     <style name="CustomPasswordTheme" parent="@style/CustomLoginTheme">
         <item name="lrScreenLoginButtonText">@string/reset_link</item>

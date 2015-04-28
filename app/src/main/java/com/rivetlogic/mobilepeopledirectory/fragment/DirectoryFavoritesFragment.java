@@ -222,7 +222,7 @@ public class DirectoryFavoritesFragment extends Fragment {
                 ToastUtil.show(getActivity(), error, true);
             }
 
-        }, da.getModifiedDate());
+        }, da.getModifiedDate(), 0, 1000);
 
         updateTask.execute();
     }

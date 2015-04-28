@@ -2,10 +2,12 @@ package com.rivetlogic.mobilepeopledirectory.data;
 
 import android.content.ContentValues;
 import android.content.Context;
-import android.database.Cursor;
-import android.database.SQLException;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
+
+
+import net.sqlcipher.Cursor;
+import net.sqlcipher.SQLException;
+import net.sqlcipher.database.SQLiteDatabase;
+import net.sqlcipher.database.SQLiteOpenHelper;
 
 import java.util.Vector;
 
@@ -45,10 +47,11 @@ public class Database {
 		}
 	}
 			
-	protected synchronized Database open(Context context, String tableName, int tableVersion, TableRow[] tableDef) throws SQLException {
+	protected synchronized Database open(Context context, String masterPassword, String tableName, int tableVersion, TableRow[] tableDef) throws SQLException {
+		SQLiteDatabase.loadLibs(context);
 		if (mDbHelper == null) {
 			mDbHelper = new DatabaseHelper(context);
-			mDatabase = mDbHelper.getWritableDatabase();
+			mDatabase = mDbHelper.getWritableDatabase(masterPassword);
 		}
 		this.tableName = tableName;
 		int version = getTableVersion(mDatabase, tableName);

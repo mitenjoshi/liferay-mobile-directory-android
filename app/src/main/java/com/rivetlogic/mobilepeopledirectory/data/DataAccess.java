@@ -9,6 +9,7 @@ import com.rivetlogic.liferayrivet.util.SettingsUtil;
 import com.rivetlogic.mobilepeopledirectory.model.User;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 /**
  * Created by lorenz on 1/21/15.
@@ -20,13 +21,15 @@ public class DataAccess implements IDataAccess {
 
     private DataAccess(Context context) {
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        userTable = new UserTable(context);
-
-        if(getCount() == 0 || getServer().equals("") || getCompanyId() == 0) {
-            SettingsUtil.init(context);
-            setServer("https://mobilepeoplefinder.vm2.rivetlogic.com");
+        if(getCount() == 0) {
+            String uuid = UUID.randomUUID().toString();
+            setMasterPassword(uuid);
+            setServer("http://mobilepeoplefinder.vm2.rivetlogic.com");
             setCompanyId(10154);
         }
+        String masterPassword = getMasterPassword();
+        userTable = new UserTable(context, masterPassword);
+        incrementCount();
     }
 
     public synchronized static IDataAccess getInstance(Context context) {
@@ -45,6 +48,14 @@ public class DataAccess implements IDataAccess {
     public void incrementCount() {
         int count = getCount();
         sharedPreferences.edit().putInt(PREFS_COUNT, ++count).apply();
+    }
+
+    private String getMasterPassword() {
+        return sharedPreferences.getString("master_password", "");
+    }
+
+    private void setMasterPassword(String password) {
+        sharedPreferences.edit().putString("master_password", password).apply();
     }
 
     @Override

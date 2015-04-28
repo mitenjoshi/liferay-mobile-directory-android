@@ -184,12 +184,12 @@ public class DirectoryListFragment extends Fragment {
                 ToastUtil.show(getActivity(), error, true);
             }
 
-        }, da.getModifiedDate());
+        }, da.getModifiedDate(), 0 , 1000);
 
         updateTask.execute();
     }
 
-    private void updateAdapter() {
+    public void updateAdapter() {
         cursorAdapter.changeCursor(da.getUsersCursor());
         if (swipeLayout != null && swipeLayout.isRefreshing())
             swipeLayout.setRefreshing(false);
