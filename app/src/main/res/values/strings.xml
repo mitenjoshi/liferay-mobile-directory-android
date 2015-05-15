@@ -28,6 +28,7 @@
     <string name="city">City:</string>
     <string name="phone">Phone:</string>
     <string name="skype">Skype:</string>
+    <string name="location">Location:</string>
 
     <string name="msg_updating_people_directory">Updating people Directory</string>
 

@@ -147,6 +147,7 @@ public class UserTable extends Database {
             }
             sb.append(" " + KEY_FULL_NAME + " LIKE '%" + filter + "%'");
         }
+        sb.append(" ORDER BY " + KEY_FULL_NAME +" COLLATE NOCASE;");
         Cursor mCursor = mDatabase.rawQuery(sb.toString(), null);
         return mCursor;
     }

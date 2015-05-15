@@ -1,208 +1,354 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
-    android:background="@color/black_05"
+    android:id="@+id/mainContainer"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical">
 
-    <include
-        android:id="@+id/toolbar"
-        layout="@layout/toolbar" />
-
-    <FrameLayout
-        android:id="@+id/fragment_directory_detail_image_container"
+    <com.rivetlogic.mobilepeopledirectory.view.StickyParallaxScrollView
+        android:id="@+id/StickyScrollView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="42dp">
-
-            <ImageView
-                android:id="@+id/fragment_directory_detail_image_background"
-                android:layout_width="match_parent"
-                android:adjustViewBounds="true"
-                android:scaleType="centerCrop"
-                android:layout_height="@dimen/background_image_size" />
-
-            <com.rivetlogic.mobilepeopledirectory.view.CircularImageView
-                android:id="@+id/fragment_directory_detail_image"
-                android:layout_width="@dimen/detail_image_size"
-                app:border_width="2dp"
-                android:layout_gravity="center"
-                app:border_color="@color/white"
-                android:layout_height="@dimen/detail_image_size" />
-
-        </FrameLayout>
-
-        <com.getbase.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fab"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|right"
-            app:fab_icon="@drawable/ic_star_white_36dp"
-            app:fab_colorNormal="@color/primary"
-            app:fab_colorPressed="@color/black_30" />
-
-    </FrameLayout>
-
-    <TextView
-        android:id="@+id/fragment_directory_detail_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="26dp"
-        android:fontFamily="sans-serif-light"
-        android:layout_marginLeft="72dp"
-        android:textColor="@color/black_70" />
-
-    <TextView
-        android:id="@+id/fragment_directory_detail_screen_name"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="72dp"
-        android:textColor="@color/black_40"
-        android:textSize="18dp" />
-
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:orientation="vertical"
-        android:gravity="center_vertical"
         android:layout_height="match_parent">
 
-        <RelativeLayout
-            android:id="@+id/fragment_directory_detail_skype_button"
-            android:background="@drawable/background_detail_fragment_button"
-            android:paddingTop="12dp"
-            android:paddingBottom="12dp"
+        <LinearLayout
+            android:id="@+id/lnrParallaxContainer"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-            <ImageView
-                android:id="@+id/fragment_directory_detail_skype_icon"
-                android:layout_marginLeft="16dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:src="@drawable/ic_skype_24dp" />
-
-            <LinearLayout
-                android:orientation="vertical"
-                android:layout_marginLeft="72dp"
-                android:layout_centerVertical="true"
-                android:layout_width="wrap_content"
+            <FrameLayout
+                android:id="@+id/fragment_directory_detail_image_container"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <TextView
-                    android:textColor="@color/black_70"
+                <FrameLayout
+                    android:id="@+id/frmImageContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/background_image_size"
+                    android:layout_marginBottom="42dp">
+
+                    <ImageView
+                        android:id="@+id/fragment_directory_detail_image_background"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/background_image_size"
+                        android:adjustViewBounds="true"
+                        android:scaleType="centerCrop" />
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/background_image_size"
+                        android:layout_marginTop="10dp">
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_gravity="center">
+
+                            <com.rivetlogic.mobilepeopledirectory.view.HexagonImageView
+                                android:id="@+id/fragment_directory_detail_image"
+                                android:layout_width="@dimen/detail_image_size"
+                                android:layout_height="@dimen/detail_image_size"
+                                android:layout_centerInParent="true"
+                                android:transitionName="add"
+                                app:border_color="@color/white"
+                                app:border_width="2dp" />
+
+                            <ImageView
+                                android:id="@+id/imgProfileId"
+                                android:layout_width="45dp"
+                                android:layout_height="45dp"
+                                android:layout_above="@id/fragment_directory_detail_image"
+                                android:layout_centerInParent="true"
+                                android:layout_marginBottom="20dp"
+                                android:src="@drawable/profile_id" />
+
+                            <TextView
+                                android:id="@+id/fragment_directory_detail_screen_name"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_below="@id/imgProfileId"
+                                android:layout_centerInParent="true"
+                                android:layout_marginTop="-20dp"
+                                android:textColor="@color/white"
+                                android:textSize="12dp" />
+
+                            <ImageView
+                                android:id="@+id/imgProfileCity"
+                                android:layout_width="45dp"
+                                android:layout_height="45dp"
+                                android:layout_centerInParent="true"
+                                android:layout_marginLeft="25dp"
+                                android:layout_toRightOf="@id/fragment_directory_detail_image"
+                                android:src="@drawable/profile_city_location" />
+
+                            <TextView
+                                android:id="@+id/fragment_directory_detail_profile_location"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_below="@id/imgProfileCity"
+                                android:layout_centerInParent="true"
+                                android:layout_marginLeft="20dp"
+                                android:layout_toRightOf="@id/fragment_directory_detail_image"
+                                android:ellipsize="end"
+                                android:singleLine="true"
+                                android:textColor="@color/white"
+                                android:textSize="12dp" />
+
+                            <ImageView
+                                android:id="@+id/imgProfileTitle"
+                                android:layout_width="45dp"
+                                android:layout_height="45dp"
+                                android:layout_centerInParent="true"
+                                android:layout_marginRight="25dp"
+                                android:layout_toLeftOf="@id/fragment_directory_detail_image"
+                                android:src="@drawable/profile_role" />
+
+                            <TextView
+                                android:id="@+id/fragment_directory_detail_profile_job_title"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_below="@id/imgProfileTitle"
+                                android:layout_centerInParent="true"
+                                android:layout_marginLeft="20dp"
+                                android:layout_marginRight="15dp"
+                                android:layout_toLeftOf="@id/fragment_directory_detail_image"
+                                android:gravity="center"
+                                android:maxLines="3"
+                                android:textColor="@color/white"
+                                android:textSize="12dp" />
+
+                            <TextView
+                                android:id="@+id/fragment_directory_detail_name"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_below="@id/fragment_directory_detail_image"
+                                android:layout_centerInParent="true"
+                                android:layout_margin="10dp"
+                                android:ellipsize="end"
+                                android:fontFamily="sans-serif-light"
+                                android:singleLine="true"
+                                android:textColor="@color/white"
+                                android:textSize="26dp" />
+
+                        </RelativeLayout>
+                    </FrameLayout>
+                </FrameLayout>
+
+                <FrameLayout
+                    android:id="@+id/frmFloatingButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="16dp"
-                    android:text="@string/skype" />
+                    android:layout_gravity="bottom|right">
 
-                <TextView
-                    android:id="@+id/fragment_directory_detail_skype"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="14dp"
-                    android:textColor="@color/black_40" />
+                    <com.getbase.floatingactionbutton.FloatingActionButton
+                        android:id="@+id/fab"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:fab_colorNormal="@color/primary"
+                        app:fab_colorPressed="@color/black_30"
+                        app:fab_icon="@drawable/ic_star_white_36dp" />
+                </FrameLayout>
 
-            </LinearLayout>
-        </RelativeLayout>
 
-        <View
-            android:background="@color/black_15"
-            android:layout_height="1dp"
-            android:layout_width="match_parent"
-            android:layout_marginLeft="72dp" />
+                <include
+                    android:id="@+id/toolbar"
+                    layout="@layout/toolbar" />
 
-        <RelativeLayout
-            android:id="@+id/fragment_directory_detail_email_button"
-            android:background="@drawable/background_detail_fragment_button"
-            android:paddingTop="12dp"
-            android:paddingBottom="12dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <ImageView
-                android:id="@+id/fragment_directory_detail_email_icon"
-                android:layout_marginLeft="16dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:src="@drawable/ic_email_grey600_24dp" />
+            </FrameLayout>
 
             <LinearLayout
-                android:orientation="vertical"
-                android:layout_marginLeft="72dp"
-                android:layout_centerVertical="true"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="-5dp"
+                android:orientation="vertical">
 
-                <TextView
-                    android:textColor="@color/black_70"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="16dp"
-                    android:text="@string/email" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/fragment_directory_detail_email"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="14dp"
-                    android:textColor="@color/black_40" />
+                    <RelativeLayout
+                        android:id="@+id/fragment_directory_detail_skype_button"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/background_detail_fragment_button"
+                        android:paddingBottom="12dp"
+                        android:paddingTop="12dp">
 
+                        <ImageView
+                            android:id="@+id/fragment_directory_detail_skype_icon"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:layout_centerVertical="true"
+                            android:layout_marginLeft="16dp"
+                            android:src="@drawable/profile_skype" />
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_marginLeft="72dp"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/skype"
+                                android:textColor="@color/black_70"
+                                android:textSize="16dp"
+                                android:visibility="visible" />
+
+                            <TextView
+                                android:id="@+id/fragment_directory_detail_skype"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/black_40"
+                                android:textSize="14dp" />
+
+                        </LinearLayout>
+                    </RelativeLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginLeft="72dp"
+                        android:background="@color/black_15"
+                        android:visibility="gone" />
+
+                    <RelativeLayout
+                        android:id="@+id/fragment_directory_detail_email_button"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/background_detail_fragment_button_2"
+                        android:paddingBottom="12dp"
+                        android:paddingTop="12dp">
+
+                        <ImageView
+                            android:id="@+id/fragment_directory_detail_email_icon"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:layout_centerVertical="true"
+                            android:layout_marginLeft="16dp"
+                            android:src="@drawable/profile_mail" />
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_marginLeft="72dp"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/email"
+                                android:textColor="@color/black_70"
+                                android:textSize="16dp"
+                                android:visibility="visible" />
+
+                            <TextView
+                                android:id="@+id/fragment_directory_detail_email"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/black_40"
+                                android:textSize="14dp" />
+
+                        </LinearLayout>
+                    </RelativeLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginLeft="72dp"
+                        android:background="@color/black_10"
+                        android:visibility="gone" />
+
+                    <RelativeLayout
+                        android:id="@+id/fragment_directory_detail_phone_button"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/background_detail_fragment_button"
+                        android:paddingBottom="12dp"
+                        android:paddingTop="12dp">
+
+                        <ImageView
+                            android:id="@+id/fragment_directory_detail_phone_icon"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:layout_centerVertical="true"
+                            android:layout_marginLeft="16dp"
+                            android:src="@drawable/profile_call" />
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_marginLeft="72dp"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/phone"
+                                android:textColor="@color/black_70"
+                                android:textSize="16dp"
+                                android:visibility="visible" />
+
+                            <TextView
+                                android:id="@+id/fragment_directory_detail_phone"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/black_40"
+                                android:textSize="14dp" />
+
+                        </LinearLayout>
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:id="@+id/fragment_directory_detail_location_button"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/background_detail_fragment_button_2"
+                        android:paddingBottom="12dp"
+                        android:paddingTop="12dp">
+
+                        <ImageView
+                            android:id="@+id/fragment_directory_detail_location_icon"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:layout_centerVertical="true"
+                            android:layout_marginLeft="16dp"
+                            android:src="@drawable/profile_location" />
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_marginLeft="72dp"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/location"
+                                android:textColor="@color/black_70"
+                                android:textSize="16dp"
+                                android:visibility="visible" />
+
+                            <TextView
+                                android:id="@+id/fragment_directory_detail_location"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/black_40"
+                                android:textSize="14dp" />
+
+                        </LinearLayout>
+                    </RelativeLayout>
+                </LinearLayout>
             </LinearLayout>
-        </RelativeLayout>
-
-        <View
-            android:background="@color/black_10"
-            android:layout_height="1dp"
-            android:layout_width="match_parent"
-            android:layout_marginLeft="72dp" />
-
-        <RelativeLayout
-            android:id="@+id/fragment_directory_detail_phone_button"
-            android:background="@drawable/background_detail_fragment_button"
-            android:paddingTop="12dp"
-            android:paddingBottom="12dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <ImageView
-                android:id="@+id/fragment_directory_detail_phone_icon"
-                android:layout_marginLeft="16dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:src="@drawable/ic_call_grey600_24dp" />
-
-            <LinearLayout
-                android:orientation="vertical"
-                android:layout_marginLeft="72dp"
-                android:layout_centerVertical="true"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
-
-                <TextView
-                    android:textColor="@color/black_70"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="16dp"
-                    android:text="@string/phone" />
-
-                <TextView
-                    android:id="@+id/fragment_directory_detail_phone"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="14dp"
-                    android:textColor="@color/black_40" />
-
-            </LinearLayout>
-        </RelativeLayout>
-
-    </LinearLayout>
+        </LinearLayout>
+    </com.rivetlogic.mobilepeopledirectory.view.StickyParallaxScrollView>
 </LinearLayout>

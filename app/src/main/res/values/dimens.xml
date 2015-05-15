@@ -1,5 +1,5 @@
 <resources>
     <dimen name="listview_image_size">64dp</dimen>
-    <dimen name="detail_image_size">100dp</dimen>
-    <dimen name="background_image_size">164dp</dimen>
+    <dimen name="detail_image_size">120dp</dimen>
+    <dimen name="background_image_size">300dp</dimen>
 </resources>

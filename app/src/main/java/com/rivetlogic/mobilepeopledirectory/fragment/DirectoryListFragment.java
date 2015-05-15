@@ -4,16 +4,25 @@ import android.app.Activity;
 import android.content.res.TypedArray;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.DecelerateInterpolator;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.rivetlogic.liferayrivet.util.ToastUtil;
 import com.rivetlogic.mobilepeopledirectory.R;
@@ -24,10 +33,12 @@ import com.rivetlogic.mobilepeopledirectory.model.User;
 import com.rivetlogic.mobilepeopledirectory.model.Users;
 import com.rivetlogic.mobilepeopledirectory.transport.PeopleDirectoryUpdateTask;
 
+import java.lang.reflect.Field;
+
 /**
  * Created by lorenz on 1/15/15.
  */
-public class DirectoryListFragment extends Fragment {
+public class DirectoryListFragment extends Fragment implements PeopleDirectoryCursorAdapter.AdapterCallback {
     private static final String KEY_STYLE_ID = "com.rivetlogic.mobilepeopledirectory.fragment.DirectoryListFragment_styleResId";
     private static final String KEY_IS_CHECKED = "com.rivetlogic.mobilepeopledirectory.fragment.DirectoryListFragment_isChecked";
 
@@ -82,6 +93,22 @@ public class DirectoryListFragment extends Fragment {
         toolbar.inflateMenu(R.menu.menu_list);
         searchView = (SearchView) toolbar.getMenu().findItem(R.id.action_search).getActionView();
         searchView.setOnQueryTextListener(searchListener);
+        try {
+            Field searchField = SearchView.class.getDeclaredField("mCloseButton");
+            searchField.setAccessible(true);
+            ImageView mSearchCloseButton = (ImageView) searchField.get(searchView);
+
+            mSearchCloseButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    searchView.setQuery("", false);
+                    updateAdapter(isChecked(), "");
+                }
+            });
+        } catch (Exception e) {
+            Log.e("DirectoryListFragment", "Error finding close button", e);
+        }
+
         toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem menuItem) {
@@ -104,16 +131,17 @@ public class DirectoryListFragment extends Fragment {
         lv = (ListView) v.findViewById(R.id.fragment_directory_listview);
         Cursor mCursor = da.getUsersCursor(false, "");
         cursorAdapter = new PeopleDirectoryCursorAdapter(getActivity(), mCursor, 0);
+        cursorAdapter.setOnClickListener(this);
         lv.setAdapter(cursorAdapter);
-        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                closeSearch();
-                Cursor mCursor = (Cursor) cursorAdapter.getItem(position);
-                User user = new User(mCursor);
-                listener.onItemClicked(user);
-            }
-        });
+//        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                closeSearch();
+//                Cursor mCursor = (Cursor) cursorAdapter.getItem(position);
+//                User user = new User(mCursor);
+//                listener.onItemClicked(user);
+//            }
+//        });
         swipeLayout = (SwipeRefreshLayout) v.findViewById(R.id.fragment_directory_listview_swipe_container);
         swipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -128,6 +156,32 @@ public class DirectoryListFragment extends Fragment {
                 getResources().getColor(android.R.color.holo_red_dark));
 
         updateUserList();
+
+//        lv.setOnScrollListener(new AbsListView.OnScrollListener() {
+//            int mLastFirstVisibleItem = 0;
+//            @Override
+//            public void onScrollStateChanged(AbsListView view, int scrollState) {
+//
+//            }
+//
+//            @Override
+//            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+////                if (view.getId() == lv.getId()) {
+////                    final int currentFirstVisibleItem = lv.getFirstVisiblePosition();
+////                    if (currentFirstVisibleItem > mLastFirstVisibleItem) {
+////
+////                        // getSherlockActivity().getSupportActionBar().hide();
+////                        toolbar.animate().translationY(-toolbar.getHeight()).setInterpolator(new AccelerateInterpolator(2));
+////                    } else if (currentFirstVisibleItem < mLastFirstVisibleItem) {
+////                        // getSherlockActivity().getSupportActionBar().show();
+////                        toolbar.animate().translationY(0).setInterpolator(new DecelerateInterpolator(2));
+////
+////                    }
+////
+////                    mLastFirstVisibleItem = currentFirstVisibleItem;
+////                }
+//            }
+//        });
 
         return v;
     }
@@ -169,6 +223,7 @@ public class DirectoryListFragment extends Fragment {
 
         @Override
         public boolean onQueryTextChange(String s) {
+            if(!TextUtils.isEmpty(s))
             updateAdapter(isChecked(), s);
             return true;
         }
@@ -186,6 +241,9 @@ public class DirectoryListFragment extends Fragment {
                 if (users != null && users.total > 0) {
                     da.updateUsers(users.list);
                     updateAdapter(isChecked(), "");
+                }else{
+                    if (swipeLayout != null && swipeLayout.isRefreshing())
+                        swipeLayout.setRefreshing(false);
                 }
             }
 
@@ -204,4 +262,11 @@ public class DirectoryListFragment extends Fragment {
             swipeLayout.setRefreshing(false);
     }
 
+    @Override
+    public void onMethodCallback(int position) {
+        closeSearch();
+        Cursor mCursor = (Cursor) cursorAdapter.getItem(position);
+        User user = new User(mCursor);
+        listener.onItemClicked(user);
+    }
 }

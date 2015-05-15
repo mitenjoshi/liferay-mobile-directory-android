@@ -44,4 +44,5 @@ dependencies {
     compile project(':LiferayRivet')
     compile 'com.crashlytics.android:crashlytics:1.+'
     compile files('libs/guava-r09.jar')
+    compile 'com.github.nirhart:parallaxscroll:1.0'
 }

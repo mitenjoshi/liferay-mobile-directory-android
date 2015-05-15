@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/list_row_directory_layout"
+<com.rivetlogic.mobilepeopledirectory.view.RippleView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/userListRippleView"
     android:layout_width="match_parent"
-    android:background="@drawable/background_list_row"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:background="@android:color/transparent"
+    android:clickable="true"
+    app:rv_centered="true"
+    app:rv_rippleDuration="150"
+    app:rv_zoom="true">
 
     <ImageView
         android:id="@+id/list_row_directory_image"
@@ -86,4 +91,4 @@
     </LinearLayout>
 
 
-</RelativeLayout>
+</com.rivetlogic.mobilepeopledirectory.view.RippleView>

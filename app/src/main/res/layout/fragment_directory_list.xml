@@ -18,9 +18,7 @@
         <ListView
             android:id="@+id/fragment_directory_listview"
             android:layout_width="match_parent"
-            android:dividerHeight="0dp"
-            android:divider="@null"
-            android:background="@color/black_05"
+            android:background="@color/white"
             android:layout_height="match_parent" />
 
     </android.support.v4.widget.SwipeRefreshLayout>
