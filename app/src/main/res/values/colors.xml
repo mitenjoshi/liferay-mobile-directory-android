@@ -55,4 +55,7 @@
     <color name="wisteria">#ff8f44ad</color>
     <color name="wet_asphalt">#ff34495e</color>
 
+    <color name="list_row_1">#FDFDFD</color>
+    <color name="list_row_2">#F1F1F1</color>
+
 </resources>

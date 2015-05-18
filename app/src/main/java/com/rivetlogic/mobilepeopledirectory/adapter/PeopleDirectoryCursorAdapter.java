@@ -2,8 +2,10 @@ package com.rivetlogic.mobilepeopledirectory.adapter;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,13 +13,19 @@ import android.widget.CursorAdapter;
 import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.rivetlogic.liferayrivet.util.SettingsUtil;
 import com.rivetlogic.mobilepeopledirectory.R;
 import com.rivetlogic.mobilepeopledirectory.data.UserTable;
 import com.rivetlogic.mobilepeopledirectory.model.User;
+import com.rivetlogic.mobilepeopledirectory.view.RippleView;
 import com.rivetlogic.mobilepeopledirectory.view.RoundedTransformation;
 import com.squareup.picasso.Picasso;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 /**
  * Created by lorenz on 4/21/15.
@@ -27,10 +35,19 @@ public class PeopleDirectoryCursorAdapter extends CursorAdapter implements Filte
     private boolean isTablet;
     private int primaryColor;
     private  User user;
+    private Context context;
+    private AdapterCallback mAdapterCallback;
+
+    public static interface AdapterCallback {
+        void onMethodCallback(int position);
+    }
+    public void setOnClickListener(AdapterCallback listener) {
+        mAdapterCallback = listener;
+    }
 
     public PeopleDirectoryCursorAdapter(Context context, Cursor c, int flags) {
         super(context, c, flags);
-
+        this.context = context;
         cursorInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.isTablet = context.getResources().getBoolean(R.bool.tablet_10);
         this.primaryColor = context.getResources().getColor(R.color.primary);
@@ -43,7 +60,25 @@ public class PeopleDirectoryCursorAdapter extends CursorAdapter implements Filte
     }
 
     @Override
-    public void bindView(View view, Context context, Cursor mCursor) {
+    public View getView(int position, View convertview, ViewGroup arg2) {
+        if (convertview == null) {
+            LayoutInflater inflater = LayoutInflater.from(context);
+            convertview = inflater.inflate(R.layout.list_row,
+                    null);
+        }
+        convertview.setTag(position);
+        return super.getView(position, convertview, arg2);
+    }
+
+    @Override
+    public void bindView(final View view, final Context context, Cursor mCursor) {
+
+        if ((Integer) view.getTag() % 2 == 0) {
+            view.setBackgroundColor(context.getResources().getColor(R.color.list_row_1));
+        } else {
+            view.setBackgroundColor(
+                    context.getResources().getColor(R.color.list_row_2));
+        }
 
         user.userId = mCursor.getInt(mCursor.getColumnIndex(UserTable.KEY_USER_ID));
         user.modifiedDate = mCursor.getLong(mCursor.getColumnIndex(UserTable.KEY_MODIFIED_DATE));
@@ -58,13 +93,15 @@ public class PeopleDirectoryCursorAdapter extends CursorAdapter implements Filte
         user.city = mCursor.getString(mCursor.getColumnIndex(UserTable.KEY_CITY));
         user.favorite = mCursor.getInt(mCursor.getColumnIndex(UserTable.KEY_FAVORITE)) == 1;
 
+
         ImageView image = (ImageView) view.findViewById(R.id.list_row_directory_image);
         TextView name = (TextView) view.findViewById(R.id.list_row_directory_name);
         TextView screenName = (TextView) view.findViewById(R.id.list_row_directory_screen_name);
-        ImageView  skypeIcon = (ImageView) view.findViewById(R.id.list_row_directory_icon_skype);
+        ImageView skypeIcon = (ImageView) view.findViewById(R.id.list_row_directory_icon_skype);
         ImageView phoneIcon = (ImageView) view.findViewById(R.id.list_row_directory_icon_phone);
         ImageView emailIcon = (ImageView) view.findViewById(R.id.list_row_directory_icon_email);
         ImageView pointer = (ImageView) view.findViewById(R.id.list_row_directory_pointer);
+        RippleView rippleView = (RippleView) view.findViewById(R.id.userListRippleView);
 
         Picasso.with(context).load(SettingsUtil.getServer() + user.portraitUrl)
                 .placeholder(R.drawable.ic_list_image_default)
@@ -90,8 +127,31 @@ public class PeopleDirectoryCursorAdapter extends CursorAdapter implements Filte
         skypeIcon.setVisibility(user.skypeName != null && user.skypeName.length() > 0 ? View.VISIBLE : View.GONE);
         emailIcon.setVisibility(user.emailAddress != null && user.emailAddress.length() > 0 ? View.VISIBLE : View.GONE);
 
-      //  if (isTablet && pointer != null)
-         //   pointer.setVisibility(selectedItem == position ? View.VISIBLE : View.GONE);
+
+        rippleView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+
+                final Handler h = new Handler();
+                final Runnable r = new Runnable() {
+
+                    @Override
+                    public void run() {
+                        try {
+                            mAdapterCallback.onMethodCallback((Integer) view.getTag());
+                        } catch (ClassCastException exception) {
+                            exception.printStackTrace();
+                        }
+                    }
+                };
+                h.postDelayed(r, 500);
+
+            }
+        });
+
+        //  if (isTablet && pointer != null)
+        //   pointer.setVisibility(selectedItem == position ? View.VISIBLE : View.GONE);
 
     }
 

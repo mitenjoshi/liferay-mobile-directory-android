@@ -1,5 +1,8 @@
 package com.rivetlogic.mobilepeopledirectory.fragment;
 
+import android.animation.Animator;
+import android.animation.ObjectAnimator;
+import android.animation.PropertyValuesHolder;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.ComponentName;
@@ -8,6 +11,9 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -21,11 +27,16 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.telephony.TelephonyManager;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
+import android.view.animation.OvershootInterpolator;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -37,6 +48,8 @@ import com.rivetlogic.mobilepeopledirectory.utilities.Utilities;
 import com.rivetlogic.mobilepeopledirectory.view.CircularImageView;
 import com.rivetlogic.liferayrivet.util.SettingsUtil;
 import com.rivetlogic.mobilepeopledirectory.model.User;
+import com.rivetlogic.mobilepeopledirectory.view.HexagonImageView;
+import com.rivetlogic.mobilepeopledirectory.view.StickyParallaxScrollView;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
@@ -52,10 +65,18 @@ public class DirectoryDetailFragment extends Fragment {
     private int styleResId;
     private User user;
     private IDataAccess da;
-    private CircularImageView imageView;
+    private HexagonImageView imageView;
     private ImageView frame;
     private int iconColor;
     private Toolbar toolbar;
+    private StickyParallaxScrollView stickyScrollView;
+    private LinearLayout lnrMain,lnrParallaxContainer;
+    private int lastMainFrameHeight = 0;
+    private FrameLayout frmParallaxConainer;
+    private View v;
+    private FrameLayout frmFloatingButton;
+    private TextView txtProfileJobTitle;
+    private TextView txtProfileLocation;
 
     public interface DirectoryDetailFragmentCallback {
         void logout();
@@ -107,9 +128,13 @@ public class DirectoryDetailFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_directory_detail, null);
-
+         v = inflater.inflate(R.layout.fragment_directory_detail, null);
+        lnrMain = (LinearLayout)v.findViewById(R.id.mainContainer);
+        lnrParallaxContainer = (LinearLayout)v.findViewById(R.id.lnrParallaxContainer);
         toolbar = (Toolbar) v.findViewById(R.id.toolbar);
+        toolbar.setBackgroundColor(Color.TRANSPARENT);
+        TextView tv = (TextView)toolbar.findViewById(R.id.toolbar_title);
+        tv.setText(null);
         toolbar.inflateMenu(R.menu.menu_detail);
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -134,15 +159,37 @@ public class DirectoryDetailFragment extends Fragment {
             }
         });
 
-        imageView = (CircularImageView)v.findViewById(R.id.fragment_directory_detail_image);
+        imageView = (HexagonImageView)v.findViewById(R.id.fragment_directory_detail_image);
         frame = (ImageView) v.findViewById(R.id.fragment_directory_detail_image_background);
-
+        frame.setImageResource(R.drawable.trans_bg);
         Picasso.with(getActivity()).load(SettingsUtil.getServer() + user.portraitUrl)
                 .placeholder(R.drawable.ic_list_image_default)
                 .error(R.drawable.ic_list_image_default)
                 .resizeDimen(R.dimen.detail_image_size, R.dimen.detail_image_size)
                 .into(target);
+        stickyScrollView = (StickyParallaxScrollView)v.findViewById(R.id.StickyScrollView);
+        stickyScrollView.setImageView(frame);
 
+        ViewTreeObserver observer = lnrMain.getViewTreeObserver();
+
+        observer.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+
+            @Override
+            public void onGlobalLayout() {
+                // TODO Auto-generated method stub
+                int tempHeight = lnrMain.getHeight();
+                FrameLayout frameLayout = (FrameLayout)v.findViewById(R.id.frmImageContainer);
+                if(lastMainFrameHeight != tempHeight) {
+                    stickyScrollView.setInitParams(frameLayout.getLayoutParams().height,
+                            lnrMain.getHeight(),frameLayout,lnrParallaxContainer);
+                    lastMainFrameHeight = tempHeight;
+                }
+
+            }
+        });
+
+
+        frmFloatingButton = (FrameLayout)v.findViewById(R.id.frmFloatingButton);
         final FloatingActionButton button = (FloatingActionButton) v.findViewById(R.id.fab);
         button.setIcon(user.favorite ? R.drawable.ic_star_white_36dp : R.drawable.ic_star_outline_white_36dp);
         button.setStrokeVisible(false);
@@ -208,6 +255,17 @@ public class DirectoryDetailFragment extends Fragment {
         ImageView phoneIcon = (ImageView) v.findViewById(R.id.fragment_directory_detail_phone_icon);
         phoneIcon.setColorFilter(iconColor, PorterDuff.Mode.SRC_ATOP);
 
+        TextView location = (TextView) v.findViewById(R.id.fragment_directory_detail_location);
+        location.setText(user.city);
+
+        TextView txtJobTitle = (TextView) v.findViewById(R.id.fragment_directory_detail_profile_job_title);
+        txtJobTitle.setText(user.jobTitle);
+
+        TextView txtLoction = (TextView) v.findViewById(R.id.fragment_directory_detail_profile_location);
+        txtLoction.setText(user.city);
+
+        getStarWithAnimation(frmFloatingButton);
+
         return v;
     }
 
@@ -217,7 +275,8 @@ public class DirectoryDetailFragment extends Fragment {
             imageView.setImageBitmap(bitmap);
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
                 Bitmap bm = blurRenderScript(bitmap);
-                frame.setImageBitmap(bm);
+                frame.setImageBitmap(bitmap);
+                setLocked(frame);
             }
         }
 
@@ -297,5 +356,63 @@ public class DirectoryDetailFragment extends Fragment {
             }
         }
 
+    }
+
+    private void getStarWithAnimation( FrameLayout lnrGame13) {
+
+        int duration = 100;
+        long animDuration = 700;
+        int currentDelay = duration + 50;
+
+        for (int i = 0; i < lnrGame13.getChildCount(); i++) {
+            final View childView = ((ViewGroup) lnrGame13).getChildAt(i);
+            // childView.setVisibility(View.VISIBLE);
+            childView.setVisibility(View.INVISIBLE);
+
+            ObjectAnimator View1 = ObjectAnimator.ofPropertyValuesHolder(childView, PropertyValuesHolder.ofFloat("scaleX", .5f, 1f),
+                    PropertyValuesHolder.ofFloat("scaleY", .5f, 1f));
+            View1.setDuration(animDuration);
+            View1.setStartDelay(currentDelay);
+            View1.setInterpolator(new OvershootInterpolator(3));
+
+            View1.addListener(new Animator.AnimatorListener() {
+
+                @Override
+                public void onAnimationStart(Animator animation) {
+                    // TODO Auto-generated method stub
+                    childView.setVisibility(View.VISIBLE);
+                }
+
+                @Override
+                public void onAnimationRepeat(Animator animation) {
+                    // TODO Auto-generated method stub
+
+                }
+
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    // TODO Auto-generated method stub
+
+                }
+
+                @Override
+                public void onAnimationCancel(Animator animation) {
+                    // TODO Auto-generated method stub
+
+                }
+            });
+
+            View1.start();
+            currentDelay += 200;
+        }
+    }
+
+    public static void  setLocked(ImageView v)
+    {
+        ColorMatrix matrix = new ColorMatrix();
+        matrix.setSaturation(0);  //0 means grayscale
+        ColorMatrixColorFilter cf = new ColorMatrixColorFilter(matrix);
+        v.setColorFilter(cf);
+//        v.setAlpha(150);   // 128 = 0.5
     }
 }

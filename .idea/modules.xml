@@ -5,6 +5,8 @@
       <module fileurl="file://$PROJECT_DIR$/libraries/LiferayRivet/LiferayRivet.iml" filepath="$PROJECT_DIR$/libraries/LiferayRivet/LiferayRivet.iml" />
       <module fileurl="file://$PROJECT_DIR$/MobilePeopleDirectory.iml" filepath="$PROJECT_DIR$/MobilePeopleDirectory.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/liferay-mobile-directory-android.iml" filepath="$PROJECT_DIR$/liferay-mobile-directory-android.iml" />
     </modules>
   </component>
 </project>
+
