@@ -14,7 +14,7 @@
     <string name="no_account">No Account?</string>
     <string name="msg_signing_in">Signing In</string>
 
-    <string name="email">Email</string>
+
     <string name="email_address">Email Address</string>
     <string name="password">Password</string>
     <string name="enter_email">Please enter you email account</string>
@@ -23,12 +23,16 @@
     <string name="submit">SUBMIT</string>
     <string name="reset_link">SEND RESET LINK</string>
 
+    <string name="email">Email:</string>
+    <string name="sms">SMS:</string>
     <string name="job_title">Job Title:</string>
     <string name="screen_name">Screen Name:</string>
     <string name="city">City:</string>
     <string name="phone">Phone:</string>
     <string name="skype">Skype:</string>
     <string name="location">Location:</string>
+    <string name="facebook">Facebook:</string>
+    <string name="twitter">Twitter:</string>
 
     <string name="msg_updating_people_directory">Updating people Directory</string>
 

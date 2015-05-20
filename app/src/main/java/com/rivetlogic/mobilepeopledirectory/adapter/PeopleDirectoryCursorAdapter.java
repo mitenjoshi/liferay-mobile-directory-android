@@ -38,9 +38,10 @@ public class PeopleDirectoryCursorAdapter extends CursorAdapter implements Filte
     private Context context;
     private AdapterCallback mAdapterCallback;
 
-    public static interface AdapterCallback {
+    public interface AdapterCallback {
         void onMethodCallback(int position);
     }
+
     public void setOnClickListener(AdapterCallback listener) {
         mAdapterCallback = listener;
     }
@@ -60,24 +61,23 @@ public class PeopleDirectoryCursorAdapter extends CursorAdapter implements Filte
     }
 
     @Override
-    public View getView(int position, View convertview, ViewGroup arg2) {
-        if (convertview == null) {
+    public View getView(int position, View convertView, ViewGroup arg2) {
+        if (convertView == null) {
             LayoutInflater inflater = LayoutInflater.from(context);
-            convertview = inflater.inflate(R.layout.list_row,
+            convertView = inflater.inflate(R.layout.list_row,
                     null);
         }
-        convertview.setTag(position);
-        return super.getView(position, convertview, arg2);
+        convertView.setTag(position);
+        return super.getView(position, convertView, arg2);
     }
 
     @Override
     public void bindView(final View view, final Context context, Cursor mCursor) {
 
         if ((Integer) view.getTag() % 2 == 0) {
-            view.setBackgroundColor(context.getResources().getColor(R.color.list_row_1));
+            view.setBackgroundColor(context.getResources().getColor(R.color.black_05));
         } else {
-            view.setBackgroundColor(
-                    context.getResources().getColor(R.color.list_row_2));
+            view.setBackgroundColor(context.getResources().getColor(R.color.black_10));
         }
 
         user.userId = mCursor.getInt(mCursor.getColumnIndex(UserTable.KEY_USER_ID));
@@ -127,15 +127,10 @@ public class PeopleDirectoryCursorAdapter extends CursorAdapter implements Filte
         skypeIcon.setVisibility(user.skypeName != null && user.skypeName.length() > 0 ? View.VISIBLE : View.GONE);
         emailIcon.setVisibility(user.emailAddress != null && user.emailAddress.length() > 0 ? View.VISIBLE : View.GONE);
 
-
         rippleView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-
-                final Handler h = new Handler();
-                final Runnable r = new Runnable() {
-
+                new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
                         try {
@@ -144,15 +139,9 @@ public class PeopleDirectoryCursorAdapter extends CursorAdapter implements Filte
                             exception.printStackTrace();
                         }
                     }
-                };
-                h.postDelayed(r, 500);
-
+                }, 500);
             }
         });
-
-        //  if (isTablet && pointer != null)
-        //   pointer.setVisibility(selectedItem == position ? View.VISIBLE : View.GONE);
-
     }
 
 }

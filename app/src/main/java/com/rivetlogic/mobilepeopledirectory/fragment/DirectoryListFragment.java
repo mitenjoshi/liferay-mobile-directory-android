@@ -93,7 +93,7 @@ public class DirectoryListFragment extends Fragment implements PeopleDirectoryCu
         toolbar.inflateMenu(R.menu.menu_list);
         searchView = (SearchView) toolbar.getMenu().findItem(R.id.action_search).getActionView();
         searchView.setOnQueryTextListener(searchListener);
-        try {
+  /*      try {
             Field searchField = SearchView.class.getDeclaredField("mCloseButton");
             searchField.setAccessible(true);
             ImageView mSearchCloseButton = (ImageView) searchField.get(searchView);
@@ -107,7 +107,7 @@ public class DirectoryListFragment extends Fragment implements PeopleDirectoryCu
             });
         } catch (Exception e) {
             Log.e("DirectoryListFragment", "Error finding close button", e);
-        }
+        }*/
 
         toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
@@ -156,32 +156,6 @@ public class DirectoryListFragment extends Fragment implements PeopleDirectoryCu
                 getResources().getColor(android.R.color.holo_red_dark));
 
         updateUserList();
-
-//        lv.setOnScrollListener(new AbsListView.OnScrollListener() {
-//            int mLastFirstVisibleItem = 0;
-//            @Override
-//            public void onScrollStateChanged(AbsListView view, int scrollState) {
-//
-//            }
-//
-//            @Override
-//            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-////                if (view.getId() == lv.getId()) {
-////                    final int currentFirstVisibleItem = lv.getFirstVisiblePosition();
-////                    if (currentFirstVisibleItem > mLastFirstVisibleItem) {
-////
-////                        // getSherlockActivity().getSupportActionBar().hide();
-////                        toolbar.animate().translationY(-toolbar.getHeight()).setInterpolator(new AccelerateInterpolator(2));
-////                    } else if (currentFirstVisibleItem < mLastFirstVisibleItem) {
-////                        // getSherlockActivity().getSupportActionBar().show();
-////                        toolbar.animate().translationY(0).setInterpolator(new DecelerateInterpolator(2));
-////
-////                    }
-////
-////                    mLastFirstVisibleItem = currentFirstVisibleItem;
-////                }
-//            }
-//        });
 
         return v;
     }
