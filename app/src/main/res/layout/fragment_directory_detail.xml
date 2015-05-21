@@ -4,90 +4,73 @@
     android:id="@+id/main_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/primary"
     android:orientation="vertical">
 
-    <com.manuelpeinado.fadingactionbar.view.ObservableScrollView
+    <com.rivetlogic.mobilepeopledirectory.view.CustomScrollView
         android:id="@+id/observable_scrollview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fillViewport="true">
 
-        <RelativeLayout
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <RelativeLayout
-                android:id="@+id/fragment_directory_detail_header_container"
+            <LinearLayout
+                android:orientation="vertical"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/background_image_size">
+                android:layout_height="wrap_content">
 
-                <ImageView
-                    android:id="@+id/fragment_directory_detail_image_background"
+                <FrameLayout
+                    android:id="@+id/header_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/background_image_size"
+                    android:minHeight="@dimen/background_image_size">
+
+                    <ImageView
+                        android:id="@+id/fragment_directory_detail_image_background"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:adjustViewBounds="true"
+                        android:alpha="1"
+                        android:scaleType="centerCrop" />
+
+                    <com.rivetlogic.mobilepeopledirectory.view.CircularImageView
+                        android:id="@+id/fragment_directory_detail_image"
+                        android:layout_width="@dimen/detail_image_size"
+                        android:layout_height="@dimen/detail_image_size"
+                        android:layout_gravity="center"
+                        app:border_color="@color/white"
+                        app:border_width="2dp" />
+
+                </FrameLayout>
+
+                <LinearLayout
+                    android:id="@+id/contact_container"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:adjustViewBounds="true"
-                    android:alpha="1"
-                    android:scaleType="centerCrop" />
+                    android:background="@color/black_05"
+                    android:orientation="vertical"
+                    android:paddingTop="32dp" />
 
-                <com.rivetlogic.mobilepeopledirectory.view.CircularImageView
-                    android:id="@+id/fragment_directory_detail_image"
-                    android:layout_width="@dimen/detail_image_size"
-                    android:layout_height="@dimen/detail_image_size"
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginTop="?attr/actionBarSize"
-                    app:border_color="@color/white"
-                    app:border_width="2dp" />
-
-                <TextView
-                    android:id="@+id/fragment_directory_detail_screen_name"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentBottom="true"
-                    android:layout_marginBottom="16dp"
-                    android:layout_marginLeft="72dp"
-                    android:textColor="@color/black_05"
-                    android:textSize="17dp" />
-
-                <TextView
-                    android:id="@+id/fragment_directory_detail_name"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_above="@id/fragment_directory_detail_screen_name"
-                    android:layout_marginLeft="72dp"
-                    android:fontFamily="sans-serif-light"
-                    android:textColor="@color/white"
-                    android:textSize="25dp" />
-
-            </RelativeLayout>
-
-            <LinearLayout
-                android:id="@+id/contact_container"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_below="@id/fragment_directory_detail_header_container"
-                android:background="@color/black_05"
-                android:orientation="vertical"
-                android:paddingTop="32dp" />
+            </LinearLayout>
 
             <com.melnykov.fab.FloatingActionButton
                 android:id="@+id/fab"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_marginTop="@dimen/fab_margin"
+                android:layout_gravity="right"
                 android:layout_marginRight="16dp"
+                android:layout_marginTop="@dimen/fab_margin"
                 android:src="@drawable/ic_star_white_24dp"
                 app:fab_colorNormal="@color/primary"
                 app:fab_colorPressed="@color/primary"
                 app:fab_colorRipple="@color/primary" />
 
-        </RelativeLayout>
+        </FrameLayout>
 
-    </com.manuelpeinado.fadingactionbar.view.ObservableScrollView>
+    </com.rivetlogic.mobilepeopledirectory.view.CustomScrollView>
 
-    <include
-        android:id="@+id/toolbar"
-        layout="@layout/toolbar_detail" />
+    <include layout="@layout/toolbar_detail" />
 
 </FrameLayout>
