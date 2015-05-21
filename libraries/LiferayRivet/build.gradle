@@ -25,5 +25,4 @@ dependencies {
     compile 'com.squareup.picasso:picasso:2.4.0'
     compile 'com.liferay.mobile:liferay-android-sdk:6.2.0.15'
     compile 'com.android.support:appcompat-v7:22.0.0'
-    compile 'com.getbase:floatingactionbutton:1.9.0'
 }

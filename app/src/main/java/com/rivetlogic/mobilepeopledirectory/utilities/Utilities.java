@@ -1,7 +1,10 @@
 package com.rivetlogic.mobilepeopledirectory.utilities;
 
 import android.content.Context;
+import android.util.TypedValue;
 import android.widget.Toast;
+
+import com.rivetlogic.mobilepeopledirectory.R;
 
 /**
  * Created by lorenz on 4/15/15.
@@ -35,5 +38,6 @@ public class Utilities {
         toast.setGravity(gravity, 0, 0);
         toast.show();
     }
+
 
 }

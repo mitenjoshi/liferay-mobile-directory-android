@@ -1,8 +1,6 @@
 package com.rivetlogic.mobilepeopledirectory.fragment;
 
-import android.animation.Animator;
-import android.animation.ObjectAnimator;
-import android.animation.PropertyValuesHolder;
+import android.animation.ValueAnimator;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.ComponentName;
@@ -11,10 +9,8 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
-import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
@@ -24,32 +20,32 @@ import android.renderscript.Element;
 import android.renderscript.RenderScript;
 import android.renderscript.ScriptIntrinsicBlur;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.telephony.TelephonyManager;
-import android.view.Gravity;
+import android.text.TextUtils;
+import android.util.DisplayMetrics;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
-import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
-import com.getbase.floatingactionbutton.FloatingActionButton;
+import com.melnykov.fab.FloatingActionButton;
+import com.nineoldandroids.view.ViewPropertyAnimator;
+import com.rivetlogic.liferayrivet.util.SettingsUtil;
 import com.rivetlogic.mobilepeopledirectory.R;
 import com.rivetlogic.mobilepeopledirectory.data.DataAccess;
 import com.rivetlogic.mobilepeopledirectory.data.IDataAccess;
+import com.rivetlogic.mobilepeopledirectory.model.User;
 import com.rivetlogic.mobilepeopledirectory.utilities.Utilities;
 import com.rivetlogic.mobilepeopledirectory.view.CircularImageView;
-import com.rivetlogic.liferayrivet.util.SettingsUtil;
-import com.rivetlogic.mobilepeopledirectory.model.User;
-import com.rivetlogic.mobilepeopledirectory.view.HexagonImageView;
-import com.rivetlogic.mobilepeopledirectory.view.StickyParallaxScrollView;
+import com.rivetlogic.mobilepeopledirectory.view.CustomScrollView;
+import com.rivetlogic.mobilepeopledirectory.view.DetailRow;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
@@ -57,7 +53,6 @@ import com.squareup.picasso.Target;
  * Created by lorenz on 1/16/15.
  */
 public class DirectoryDetailFragment extends Fragment {
-
     private static final String KEY_STYLE_ID = "com.rivetlogic.liferay.screens.login.LRDirectoryDetailFragment_styleResId";
     private static final String KEY_USER = "com.rivetlogic.liferay.screens.login.LRDirectoryDetailFragment_user";
 
@@ -65,18 +60,17 @@ public class DirectoryDetailFragment extends Fragment {
     private int styleResId;
     private User user;
     private IDataAccess da;
-    private HexagonImageView imageView;
+    private CircularImageView circleImage;
     private ImageView frame;
     private int iconColor;
-    private Toolbar toolbar;
-    private StickyParallaxScrollView stickyScrollView;
-    private LinearLayout lnrMain,lnrParallaxContainer;
-    private int lastMainFrameHeight = 0;
-    private FrameLayout frmParallaxConainer;
-    private View v;
-    private FrameLayout frmFloatingButton;
-    private TextView txtProfileJobTitle;
-    private TextView txtProfileLocation;
+
+    private FrameLayout toolbarContainer;
+    private TextView toolbarTitle;
+    private Drawable toolbarBackground;
+    private View headerContainer;
+    private int mLastDampedScroll;
+    private FloatingActionButton fab;
+    private boolean fabVisible;
 
     public interface DirectoryDetailFragmentCallback {
         void logout();
@@ -89,10 +83,6 @@ public class DirectoryDetailFragment extends Fragment {
         args.putSerializable(KEY_USER, user);
         fragment.setArguments(args);
         return fragment;
-    }
-
-    public DirectoryDetailFragment() {
-
     }
 
     @Override
@@ -109,12 +99,10 @@ public class DirectoryDetailFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         Bundle args = getArguments();
         if (args != null && args.containsKey(KEY_USER)) {
             user = (User) args.getSerializable(KEY_USER);
         }
-
         da = DataAccess.getInstance(getActivity());
         styleResId = R.style.LRThemeUserDetailDefault;
         setStyledAttributes();
@@ -123,18 +111,17 @@ public class DirectoryDetailFragment extends Fragment {
             if (styleResId > 0)
                 setStyledAttributes();
         }
-
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-         v = inflater.inflate(R.layout.fragment_directory_detail, null);
-        lnrMain = (LinearLayout)v.findViewById(R.id.mainContainer);
-        lnrParallaxContainer = (LinearLayout)v.findViewById(R.id.lnrParallaxContainer);
-        toolbar = (Toolbar) v.findViewById(R.id.toolbar);
-        toolbar.setBackgroundColor(Color.TRANSPARENT);
-        TextView tv = (TextView)toolbar.findViewById(R.id.toolbar_title);
-        tv.setText(null);
+        View v = inflater.inflate(R.layout.fragment_directory_detail, null);
+
+        Toolbar toolbar = (Toolbar) v.findViewById(R.id.toolbar);
+        toolbarContainer = (FrameLayout) v.findViewById(R.id.toolbar_container);
+        toolbarTitle = (TextView) v.findViewById(R.id.title);
+        toolbarTitle.setText(user.fullName);
+        toolbarBackground = toolbarContainer.getBackground();
         toolbar.inflateMenu(R.menu.menu_detail);
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -159,124 +146,186 @@ public class DirectoryDetailFragment extends Fragment {
             }
         });
 
-        imageView = (HexagonImageView)v.findViewById(R.id.fragment_directory_detail_image);
+        headerContainer = v.findViewById(R.id.header_container);
+        final CustomScrollView scrollView = (CustomScrollView) v.findViewById(R.id.observable_scrollview);
+
+        fabVisible = true;
+        circleImage = (CircularImageView) v.findViewById(R.id.fragment_directory_detail_image);
         frame = (ImageView) v.findViewById(R.id.fragment_directory_detail_image_background);
-        frame.setImageResource(R.drawable.trans_bg);
+        ColorMatrix matrix = new ColorMatrix();
+        matrix.setSaturation(0);
+        ColorMatrixColorFilter cf = new ColorMatrixColorFilter(matrix);
+        frame.setColorFilter(cf);
+
         Picasso.with(getActivity()).load(SettingsUtil.getServer() + user.portraitUrl)
                 .placeholder(R.drawable.ic_list_image_default)
                 .error(R.drawable.ic_list_image_default)
                 .resizeDimen(R.dimen.detail_image_size, R.dimen.detail_image_size)
                 .into(target);
-        stickyScrollView = (StickyParallaxScrollView)v.findViewById(R.id.StickyScrollView);
-        stickyScrollView.setImageView(frame);
 
-        ViewTreeObserver observer = lnrMain.getViewTreeObserver();
+        LinearLayout contactContainer = (LinearLayout) v.findViewById(R.id.contact_container);
+        updateData(contactContainer);
 
-        observer.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-
-            @Override
-            public void onGlobalLayout() {
-                // TODO Auto-generated method stub
-                int tempHeight = lnrMain.getHeight();
-                FrameLayout frameLayout = (FrameLayout)v.findViewById(R.id.frmImageContainer);
-                if(lastMainFrameHeight != tempHeight) {
-                    stickyScrollView.setInitParams(frameLayout.getLayoutParams().height,
-                            lnrMain.getHeight(),frameLayout,lnrParallaxContainer);
-                    lastMainFrameHeight = tempHeight;
-                }
-
-            }
-        });
-
-
-        frmFloatingButton = (FrameLayout)v.findViewById(R.id.frmFloatingButton);
-        final FloatingActionButton button = (FloatingActionButton) v.findViewById(R.id.fab);
-        button.setIcon(user.favorite ? R.drawable.ic_star_white_36dp : R.drawable.ic_star_outline_white_36dp);
-        button.setStrokeVisible(false);
-        button.setOnClickListener(new View.OnClickListener() {
+        fab = (FloatingActionButton) v.findViewById(R.id.fab);
+        fab.setImageResource(user.favorite ? R.drawable.ic_star_white_24dp : R.drawable.ic_star_outline_white_24dp);
+        fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 user.favorite = !user.favorite;
                 da.updateUser(user);
-                button.setIcon(user.favorite ? R.drawable.ic_star_white_36dp : R.drawable.ic_star_outline_white_36dp);
+                fab.setImageResource(user.favorite ? R.drawable.ic_star_white_24dp : R.drawable.ic_star_outline_white_24dp);
                 Utilities.showTost(getActivity(), user.favorite ? R.string.user_added_favorites : R.string.user_removed_favorites);
             }
         });
 
-        TextView name = (TextView) v.findViewById(R.id.fragment_directory_detail_name);
-        name.setText(user.fullName);
-
-        TextView email = (TextView) v.findViewById(R.id.fragment_directory_detail_email);
-        email.setText(user.emailAddress);
-
-        TextView screenName = (TextView) v.findViewById(R.id.fragment_directory_detail_screen_name);
-        screenName.setText(user.screenName);
-
-        TextView phone = (TextView) v.findViewById(R.id.fragment_directory_detail_phone);
-        phone.setText(user.userPhone);
-
-        TextView skype = (TextView) v.findViewById(R.id.fragment_directory_detail_skype);
-        skype.setText(user.skypeName);
-
-        RelativeLayout buttonSkype = (RelativeLayout) v.findViewById(R.id.fragment_directory_detail_skype_button);
-        buttonSkype.setOnClickListener(new View.OnClickListener() {
+        scrollView.post(new Runnable() {
             @Override
-            public void onClick(View v) {
-                Uri skypeUri = Uri.parse("skype:"+user.skypeName+"?call&video=true");
-                initiateSkypeUri(getActivity(), skypeUri);
+            public void run() {
+                int position = headerContainer.getMinimumHeight() - toolbarContainer.getMinimumHeight();
+                scrollView.scrollTo(0, position);
+                updateToolbarHeight(position);
+                hideFAB();
+                scrollView.setOnScrollChangedListener(scrollChangedListener);
             }
         });
 
-        RelativeLayout buttonEmail = (RelativeLayout) v.findViewById(R.id.fragment_directory_detail_email_button);
-        buttonEmail.setOnClickListener(new View.OnClickListener() {
+        scrollView.postDelayed(new Runnable() {
             @Override
-            public void onClick(View v) {
-                Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts("mailto", user.emailAddress, null));
-                startActivity(Intent.createChooser(emailIntent, getString(R.string.email)));
+            public void run() {
+                ValueAnimator realSmoothScrollAnimation = ValueAnimator.ofInt(scrollView.getScrollY(), 0);
+                realSmoothScrollAnimation.setDuration(500);
+                realSmoothScrollAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                    @Override
+                    public void onAnimationUpdate(ValueAnimator animation) {
+                        int scrollTo = (Integer) animation.getAnimatedValue();
+                        scrollView.scrollTo(0, scrollTo);
+                    }
+                });
+                realSmoothScrollAnimation.start();
             }
-        });
-
-        RelativeLayout buttonPhone = (RelativeLayout) v.findViewById(R.id.fragment_directory_detail_phone_button);
-    //    if(!isTelephonyEnabled())
-    //        buttonPhone.setVisibility(View.GONE);
-        buttonPhone.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(Intent.ACTION_DIAL);
-                intent.setData(Uri.parse("tel:"+ user.userPhone));
-                startActivity(intent);
-            }
-        });
-
-
-        ImageView emailIcon = (ImageView) v.findViewById(R.id.fragment_directory_detail_email_icon);
-        emailIcon.setColorFilter(iconColor, PorterDuff.Mode.SRC_ATOP);
-
-        ImageView phoneIcon = (ImageView) v.findViewById(R.id.fragment_directory_detail_phone_icon);
-        phoneIcon.setColorFilter(iconColor, PorterDuff.Mode.SRC_ATOP);
-
-        TextView location = (TextView) v.findViewById(R.id.fragment_directory_detail_location);
-        location.setText(user.city);
-
-        TextView txtJobTitle = (TextView) v.findViewById(R.id.fragment_directory_detail_profile_job_title);
-        txtJobTitle.setText(user.jobTitle);
-
-        TextView txtLoction = (TextView) v.findViewById(R.id.fragment_directory_detail_profile_location);
-        txtLoction.setText(user.city);
-
-        getStarWithAnimation(frmFloatingButton);
+        }, 250);
 
         return v;
     }
 
+    CustomScrollView.OnScrollChangedListener scrollChangedListener = new CustomScrollView.OnScrollChangedListener() {
+        @Override
+        public void onScrollChanged(int mScrollX, int mScrollY) {
+            onScroll(mScrollY);
+        }
+    };
+
+    private void updateData(LinearLayout contactContainer) {
+        int color = getResources().getColor(R.color.primary);
+        if (!TextUtils.isEmpty(user.userPhone)) {
+            DetailRow newRow = new DetailRow(getActivity());
+            newRow.setIconColor(color);
+            newRow.setIcon(R.drawable.ic_call_grey600_24dp);
+            newRow.setTitle(R.string.phone);
+            newRow.setData(user.userPhone);
+            newRow.setBackgroundRes(contactContainer.getChildCount() % 2 == 0 ? R.color.black_05 : R.color.black_10);
+            contactContainer.addView(newRow);
+            //  newRow.setOnClickListener(buttonPhoneListener);
+        }
+
+        if (!TextUtils.isEmpty(user.userPhone)) {
+            DetailRow newRow = new DetailRow(getActivity());
+            newRow.setIcon(R.drawable.ic_message_grey600_24dp);
+            newRow.setTitle(R.string.sms);
+            newRow.setData(user.userPhone);
+            newRow.setIconColor(color);
+            newRow.setBackgroundRes(contactContainer.getChildCount() % 2 == 0 ? R.color.black_05 : R.color.black_10);
+            contactContainer.addView(newRow);
+            //   newRow.setOnClickListener(buttonMessageListener);
+        }
+
+        if (!TextUtils.isEmpty(user.emailAddress)) {
+            DetailRow newRow = new DetailRow(getActivity());
+            newRow.setIcon(R.drawable.ic_email_grey600_24dp);
+            newRow.setTitle(R.string.email);
+            newRow.setData(user.emailAddress);
+            newRow.setIconColor(color);
+            newRow.setBackgroundRes(contactContainer.getChildCount() % 2 == 0 ? R.color.black_05 : R.color.black_10);
+            contactContainer.addView(newRow);
+            //  newRow.setOnClickListener(buttonEmailListener);
+        }
+
+        if (!TextUtils.isEmpty(user.skypeName)) {
+            DetailRow newRow = new DetailRow(getActivity());
+            newRow.setIcon(R.drawable.ic_skype_24dp);
+            newRow.setTitle(R.string.skype);
+            newRow.setData(user.skypeName);
+            newRow.setBackgroundRes(contactContainer.getChildCount() % 2 == 0 ? R.color.black_05 : R.color.black_10);
+            contactContainer.addView(newRow);
+            //   newRow.setOnClickListener(buttonSkypeListener);
+        }
+
+        if (!TextUtils.isEmpty(user.city)) {
+            DetailRow newRow = new DetailRow(getActivity());
+            newRow.setIcon(R.drawable.ic_place_grey600_24dp);
+            newRow.setTitle(R.string.location);
+            newRow.setData(user.city);
+            newRow.setIconColor(color);
+            newRow.setBackgroundRes(contactContainer.getChildCount() % 2 == 0 ? R.color.black_05 : R.color.black_10);
+            contactContainer.addView(newRow);
+        }
+
+        DisplayMetrics metrics = getResources().getDisplayMetrics();
+        int height = metrics.heightPixels;
+        try {
+            height -= toolbarContainer.getMinimumHeight();
+            int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
+            if (resourceId > 0) {
+                height -= getResources().getDimensionPixelSize(resourceId);
+            }
+        } catch (Exception e) {
+
+        }
+        contactContainer.setMinimumHeight(height);
+    }
+
+    View.OnClickListener buttonPhoneListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent intent = new Intent(Intent.ACTION_DIAL);
+            intent.setData(Uri.parse("tel:" + user.userPhone));
+            startActivity(intent);
+        }
+    };
+
+    View.OnClickListener buttonMessageListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            // intent.setType("vnd.android-dir/mms-sms");
+            intent.setData(Uri.parse("sms:" + user.userPhone));
+            startActivity(intent);
+        }
+    };
+
+    View.OnClickListener buttonEmailListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts("mailto", user.emailAddress, null));
+            startActivity(Intent.createChooser(emailIntent, getString(R.string.email)));
+        }
+    };
+
+    View.OnClickListener buttonSkypeListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Uri skypeUri = Uri.parse("skype:" + user.skypeName + "?call&video=true");
+            initiateSkypeUri(getActivity(), skypeUri);
+        }
+    };
+
     private Target target = new Target() {
         @Override
         public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-            imageView.setImageBitmap(bitmap);
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            circleImage.setImageBitmap(bitmap);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
                 Bitmap bm = blurRenderScript(bitmap);
-                frame.setImageBitmap(bitmap);
-                setLocked(frame);
+                frame.setImageBitmap(bm);
             }
         }
 
@@ -298,7 +347,7 @@ public class DirectoryDetailFragment extends Fragment {
         ScriptIntrinsicBlur script = ScriptIntrinsicBlur.create(rs, Element.U8_4(rs));
         Allocation inAlloc = Allocation.createFromBitmap(rs, smallBitmap, Allocation.MipmapControl.MIPMAP_NONE, Allocation.USAGE_GRAPHICS_TEXTURE);
         Allocation outAlloc = Allocation.createFromBitmap(rs, output);
-        script.setRadius(25);
+        script.setRadius(15);
         script.setInput(inAlloc);
         script.forEach(outAlloc);
         outAlloc.copyTo(output);
@@ -306,14 +355,14 @@ public class DirectoryDetailFragment extends Fragment {
         return output;
     }
 
-    private boolean isTelephonyEnabled(){
-        TelephonyManager tm = (TelephonyManager)getActivity().getSystemService(Context.TELEPHONY_SERVICE);
-        return tm != null && tm.getSimState()==TelephonyManager.SIM_STATE_READY;
+    private boolean isTelephonyEnabled() {
+        TelephonyManager tm = (TelephonyManager) getActivity().getSystemService(Context.TELEPHONY_SERVICE);
+        return tm != null && tm.getSimState() == TelephonyManager.SIM_STATE_READY;
     }
 
     public void initiateSkypeUri(Context myContext, Uri mySkypeUri) {
         if (!isSkypeClientInstalled(myContext)) {
-            goToMarket(myContext);
+            goToMarket();
             return;
         }
         Intent skype = new Intent("android.intent.action.VIEW");
@@ -329,14 +378,13 @@ public class DirectoryDetailFragment extends Fragment {
         PackageManager myPackageMgr = myContext.getPackageManager();
         try {
             myPackageMgr.getPackageInfo("com.skype.raider", PackageManager.GET_ACTIVITIES);
-        }
-        catch (PackageManager.NameNotFoundException e) {
+        } catch (PackageManager.NameNotFoundException e) {
             return (false);
         }
         return (true);
     }
 
-    public void goToMarket(Context myContext) {
+    public void goToMarket() {
         Uri marketUri = Uri.parse("market://details?id=com.skype.raider");
         Intent myIntent = new Intent(Intent.ACTION_VIEW, marketUri);
         myIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -355,64 +403,78 @@ public class DirectoryDetailFragment extends Fragment {
                 a.recycle();
             }
         }
-
     }
 
-    private void getStarWithAnimation( FrameLayout lnrGame13) {
+    public void onScroll(int scrollPosition) {
+        int headerHeight = headerContainer.getHeight() - toolbarContainer.getMinimumHeight();
+        float ratio = 0;
+        if (scrollPosition > 0 && headerHeight > 0)
+            ratio = (float) Math.min(Math.max(scrollPosition, 0), headerHeight) / headerHeight;
 
-        int duration = 100;
-        long animDuration = 700;
-        int currentDelay = duration + 50;
+        updateToolbarHeight(scrollPosition);
+        updateToolbarTransparency(ratio);
+        updateFABVisibility(ratio);
 
-        for (int i = 0; i < lnrGame13.getChildCount(); i++) {
-            final View childView = ((ViewGroup) lnrGame13).getChildAt(i);
-            // childView.setVisibility(View.VISIBLE);
-            childView.setVisibility(View.INVISIBLE);
+        updateCircleImageTransparency(ratio);
+        updateParallaxEffect(scrollPosition);
+    }
 
-            ObjectAnimator View1 = ObjectAnimator.ofPropertyValuesHolder(childView, PropertyValuesHolder.ofFloat("scaleX", .5f, 1f),
-                    PropertyValuesHolder.ofFloat("scaleY", .5f, 1f));
-            View1.setDuration(animDuration);
-            View1.setStartDelay(currentDelay);
-            View1.setInterpolator(new OvershootInterpolator(3));
+    private void updateToolbarTransparency(float scrollRatio) {
+        int newAlpha = (int) (scrollRatio * 255);
+        toolbarBackground.setAlpha(newAlpha);
+        toolbarContainer.setBackground(toolbarBackground);
+    }
 
-            View1.addListener(new Animator.AnimatorListener() {
+    private void updateCircleImageTransparency(float scrollRatio) {
+        circleImage.setAlpha(1f - scrollRatio * 1.5f);
+    }
 
-                @Override
-                public void onAnimationStart(Animator animation) {
-                    // TODO Auto-generated method stub
-                    childView.setVisibility(View.VISIBLE);
-                }
+    private void updateToolbarHeight(float scrollPosition) {
+        int newHeight = (int) (headerContainer.getHeight() - scrollPosition);
+        FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) toolbarContainer.getLayoutParams();
+        if (newHeight > toolbarContainer.getMinimumHeight()) {
+            lp.height = newHeight;
+        } else if (newHeight > 0) {
+            lp.height = toolbarContainer.getMinimumHeight();
+        }
+        toolbarContainer.setLayoutParams(lp);
+    }
 
-                @Override
-                public void onAnimationRepeat(Animator animation) {
-                    // TODO Auto-generated method stub
-
-                }
-
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    // TODO Auto-generated method stub
-
-                }
-
-                @Override
-                public void onAnimationCancel(Animator animation) {
-                    // TODO Auto-generated method stub
-
-                }
-            });
-
-            View1.start();
-            currentDelay += 200;
+    private void updateFABVisibility(float scrollRatio) {
+        if (scrollRatio > .5) {
+            hideFAB();
+        } else {
+            showFAB();
         }
     }
 
-    public static void  setLocked(ImageView v)
-    {
-        ColorMatrix matrix = new ColorMatrix();
-        matrix.setSaturation(0);  //0 means grayscale
-        ColorMatrixColorFilter cf = new ColorMatrixColorFilter(matrix);
-        v.setColorFilter(cf);
-//        v.setAlpha(150);   // 128 = 0.5
+    private void updateParallaxEffect(int scrollPosition) {
+        float damping = 0.5f;
+        int dampedScroll = (int) (scrollPosition * damping);
+        int offset = mLastDampedScroll - dampedScroll;
+        headerContainer.offsetTopAndBottom(-offset);
+        mLastDampedScroll = dampedScroll;
     }
+
+    private void showFAB() {
+        if (!fabVisible) {
+            fabVisible = !fabVisible;
+            ViewPropertyAnimator.animate(fab).cancel();
+            ViewPropertyAnimator.animate(fab).scaleX(1).scaleY(1).setDuration(200).start();
+            ViewPropertyAnimator.animate(toolbarTitle).cancel();
+            ViewPropertyAnimator.animate(toolbarTitle).scaleX(1.4f).scaleY(1.4f).setDuration(400).start();
+        }
+    }
+
+    private void hideFAB() {
+        if (fabVisible) {
+            fabVisible = !fabVisible;
+            ViewPropertyAnimator.animate(fab).cancel();
+            ViewPropertyAnimator.animate(fab).scaleX(0).scaleY(0).setDuration(200).start();
+            ViewPropertyAnimator.animate(toolbarTitle).cancel();
+            ViewPropertyAnimator.animate(toolbarTitle).scaleX(1f).scaleY(1f).setDuration(400).start();
+
+        }
+    }
+
 }

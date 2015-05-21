@@ -10,7 +10,6 @@
     app:rv_rippleDuration="150"
     app:rv_zoom="true">
 
-
     <ImageView
         android:id="@+id/list_row_directory_image"
         android:layout_width="@dimen/listview_image_size"
@@ -52,24 +51,24 @@
 
         <ImageView
             android:id="@+id/list_row_directory_icon_skype"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
+            android:layout_width="14dp"
+            android:layout_height="14dp"
             android:layout_marginRight="3dp"
-            android:src="@drawable/profile_skype" />
+            android:src="@drawable/ic_skype_18dp" />
 
         <ImageView
             android:id="@+id/list_row_directory_icon_phone"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
+            android:layout_width="14dp"
+            android:layout_height="14dp"
             android:layout_marginRight="3dp"
-            android:src="@drawable/profile_call" />
+            android:src="@drawable/ic_call_grey600_18dp" />
 
         <ImageView
             android:id="@+id/list_row_directory_icon_email"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
+            android:layout_width="14dp"
+            android:layout_height="14dp"
             android:layout_marginRight="3dp"
-            android:src="@drawable/profile_mail" />
+            android:src="@drawable/ic_email_grey600_18dp" />
     </LinearLayout>
-</com.rivetlogic.mobilepeopledirectory.view.RippleView>
 
+</com.rivetlogic.mobilepeopledirectory.view.RippleView>
